@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": ["Bash(ls:*)", "Bash(cat:*)"],
+    "ask": ["Bash(gh pr merge:*)"],
+    "deny": []
+  }
+}
