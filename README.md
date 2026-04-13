@@ -45,7 +45,7 @@ Add to `~/.claude/settings.json`:
 
 #### Slash Commands
 
-- `/analyze-hook-logs [days]` - Analyze logs and suggest harness improvements
+- `/tool-use-steering:improve [days]` - Analyze tool-use logs and interactively apply harness improvements
 
 #### Utility Scripts
 

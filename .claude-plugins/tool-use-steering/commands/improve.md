@@ -1,5 +1,5 @@
 ---
-description: Claude Code hook logs を分析し settings/CLAUDE.md/scripts 全体の改善候補を対話適用
+description: ツール呼び出しログからハーネス (settings/CLAUDE.md/hooks/scripts) の改善候補を分類・対話適用
 allowed-tools: ["Bash(${CLAUDE_PLUGIN_ROOT}/scripts/aggregate-hook-logs.sh:*)"]
 ---
 
