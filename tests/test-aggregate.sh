@@ -8,7 +8,7 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 # 責務なのでここではテストしない。
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-AGG="$SCRIPT_DIR/../.claude-plugins/hook-logging/scripts/aggregate-hook-logs.sh"
+AGG="$SCRIPT_DIR/../.claude-plugins/tool-use-steering/scripts/aggregate-hook-logs.sh"
 FIXTURE="$SCRIPT_DIR/fixtures/sample-logs.jsonl"
 SETTINGS="$SCRIPT_DIR/fixtures/sample-settings.json"
 

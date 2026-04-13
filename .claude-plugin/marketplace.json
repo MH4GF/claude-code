@@ -3,9 +3,9 @@
   "owner": { "name": "MH4GF" },
   "plugins": [
     {
-      "name": "hook-logging",
-      "source": "./.claude-plugins/hook-logging",
-      "description": "JSONL logging of all Claude Code hook events with aggregation and analysis",
+      "name": "tool-use-steering",
+      "source": "./.claude-plugins/tool-use-steering",
+      "description": "Steering loop for Claude Code harness: log tool-use events, aggregate invocations, and AI-driven analysis",
       "version": "0.1.0",
       "author": { "name": "MH4GF" }
     }

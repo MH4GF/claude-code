@@ -4,9 +4,11 @@ MH4GF's Claude Code plugin marketplace.
 
 ## Plugins
 
-### hook-logging
+### tool-use-steering
 
-JSONL logging of all Claude Code hook events (PreToolUse, PostToolUse, PermissionRequest, PermissionDenied) with aggregation and analysis.
+Steering loop for Claude Code harness: log tool-use events, aggregate invocations, and AI-driven analysis to continuously improve settings.json, CLAUDE.md, hooks, and scripts.
+
+Based on the [harness engineering](https://martinfowler.com/articles/harness-engineering.html) framework — automates the steering loop by instrumenting tool-use hook events, deterministically aggregating invocations, and letting Claude classify and apply improvements.
 
 #### Installation
 
@@ -15,7 +17,7 @@ Add to `~/.claude/settings.json`:
 ```json
 {
   "enabledPlugins": {
-    "hook-logging@claude-code": true
+    "tool-use-steering@claude-code": true
   },
   "extraKnownMarketplaces": {
     "claude-code": {
@@ -29,16 +31,21 @@ Add to `~/.claude/settings.json`:
 }
 ```
 
-#### What it does
+#### 3-Layer Architecture
 
-- Logs every hook event to `~/.claude/logs/<session_id>.jsonl`
-- Truncates long strings in `tool_input` at 2048 characters
-- Strips `tool_response` body, keeping only `is_error` flag (secrets & size protection)
-- Never blocks tool execution (silent, always exit 0)
+```
+[1] log-hook-event.sh       ─── JSONL instrumentation
+[2] aggregate-hook-logs.sh  ─── Deterministic aggregation
+[3] /analyze-hook-logs      ─── AI-driven steering
+```
+
+1. **Instrumentation**: Logs all 4 hook events (PreToolUse/PostToolUse/PermissionRequest/PermissionDenied) to `~/.claude/logs/<session_id>.jsonl`
+2. **Aggregation**: Groups by invocation, derives ask_flow states (auto_allowed/user_allowed/user_denied/auto_denied), cross-references with current settings
+3. **Analysis**: Claude reads the aggregation, classifies improvements across settings.json, CLAUDE.md, scripts, and hooks, then applies them interactively
 
 #### Slash Commands
 
-- `/analyze-hook-logs [days]` - Aggregate and analyze hook logs, suggest improvements to settings.json, CLAUDE.md, scripts, and hooks
+- `/analyze-hook-logs [days]` - Analyze logs and suggest harness improvements
 
 #### Utility Scripts
 

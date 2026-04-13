@@ -6,7 +6,7 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 # $HOME / CLAUDE_LOG_DIR を throwaway dir に差し替えて、本物のログに触れない。
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-HOOK="$SCRIPT_DIR/../.claude-plugins/hook-logging/hooks/log-hook-event.sh"
+HOOK="$SCRIPT_DIR/../.claude-plugins/tool-use-steering/hooks/log-hook-event.sh"
 
 if [ ! -x "$HOOK" ]; then
   echo "FAIL: $HOOK not found or not executable"
