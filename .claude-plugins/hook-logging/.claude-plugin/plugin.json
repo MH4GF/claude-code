@@ -1,0 +1,6 @@
+{
+  "name": "hook-logging",
+  "description": "JSONL logging of all Claude Code hook events with aggregation and analysis",
+  "version": "0.1.0",
+  "author": { "name": "MH4GF" }
+}
