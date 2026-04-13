@@ -70,7 +70,6 @@ analysis=$(jq -s \
 
   def head_token: (. // "") | split(" ") | .[0] // "";
   def cmd_prefix: (. // "") | split(" ") | .[0:2] | join(" ");
-  def matches_any($xs): . as $c | any($xs[]?; . as $p | $c | startswith($p));
 
   . as $all
 
@@ -128,10 +127,7 @@ analysis=$(jq -s \
               example_commands: ([.[] | .command] | unique | .[0:5]),
               error_count: ([.[] | select(.post_error)] | length),
               first_seen: ([.[] | .first_ts] | min),
-              last_seen:  ([.[] | .first_ts] | max),
-              in_current_allow: (.[0].command | matches_any($allow_prefixes)),
-              in_current_ask:   (.[0].command | matches_any($ask_prefixes)),
-              in_current_deny:  (.[0].command | matches_any($deny_prefixes))
+              last_seen:  ([.[] | .first_ts] | max)
             })
           | sort_by(-.count)
     ) as $groups
@@ -192,9 +188,8 @@ echo "$analysis" | jq -r '
   (.groups | .[0:20] | map(
     "- [\(.tool_name)] `\(.cmd_prefix)` × \(.count)"
     + " flow=\(.ask_flow_breakdown | tostring)"
-    + " | allow=\(.in_current_allow) ask=\(.in_current_ask) deny=\(.in_current_deny)"
     + (if .error_count > 0 then " errors=\(.error_count)" else "" end)
   ) | join("\n")),
   "",
-  "詳細は `--format json` / 改善提案は `/analyze-hook-logs` を使用"
+  "詳細は `--format json` / 改善提案は `/tool-use-steering:improve` を使用"
 '

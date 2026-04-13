@@ -68,11 +68,6 @@ assert_jq "pnpm test の cwds が /repo/a に集中" \
 assert_jq "pnpm test の user_allowed == 3" \
   '.groups | any(.cmd_prefix == "pnpm test" and .ask_flow_breakdown.user_allowed == 3)'
 
-# --- cross-reference フラグ ---
-# gh pr merge は現 settings.json の permissions.ask に入っているので in_current_ask=true
-assert_jq "gh pr グループ in_current_ask=true" \
-  '.groups | any(.cmd_prefix == "gh pr" and .in_current_ask == true)'
-
 # --- permission_mode の保持 ---
 # vim config.yml は plan mode で実行された
 assert_jq "vim の permission_modes=[plan]" \
