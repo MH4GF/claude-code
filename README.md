@@ -6,6 +6,14 @@ MH4GF's Claude Code plugin marketplace.
 
 - **[tool-use-steering](.claude-plugins/tool-use-steering/)** — Steering loop for Claude Code harness: log tool-use events, aggregate invocations, and AI-driven analysis to continuously improve settings.json, CLAUDE.md, hooks, and scripts.
 
+## User scope config
+
+`user-scope/` contains user scope Claude Code settings (`CLAUDE.md`, `settings.json`, `commands/`, `skills/`, `hooks/`). Run `./setup.sh` to symlink them into `~/.claude/`.
+
+```bash
+./setup.sh
+```
+
 ## Development
 
 ### Run Tests
