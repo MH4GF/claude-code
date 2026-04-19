@@ -1,6 +1,8 @@
 # claude-code
 
-MH4GF's Claude Code plugin marketplace.
+MH4GF's Claude Code configuration and plugin marketplace.
+
+This repository hosts both publicly distributed plugins (`.claude-plugins/`) and personal user scope settings (`user-scope/`) symlinked into `~/.claude/`.
 
 ## Plugins
 
