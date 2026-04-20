@@ -494,7 +494,9 @@
       "Bash(sysctl:*)",
       "Bash(top:*)",
       "Read(~/.local/share/**)",
-      "mcp__linear__list_projects"
+      "mcp__linear__list_projects",
+      "mcp__chrome-devtools__lighthouse_audit",
+      "Skill(tool-use-steering:improve)"
     ],
     "deny": [
       "Bash(rm -rf /)",
