@@ -503,7 +503,10 @@
       "Read(~/.local/share/**)",
       "mcp__linear__list_projects",
       "mcp__chrome-devtools__lighthouse_audit",
-      "Skill(tool-use-steering:improve)"
+      "Skill(tool-use-steering:improve)",
+      "Bash(docker stop:*)",
+      "Bash(which:*)",
+      "Bash(git reset --soft:*)"
     ],
     "deny": [
       "Bash(rm -rf /)",
@@ -581,13 +584,28 @@
       "Bash(~/.claude/plugins/marketplaces/tq-marketplace/.claude-plugins/gh-ops/scripts/gh-reply-review-thread:*)",
       "Bash(/Users/mh4gf/.claude/plugins/marketplaces/tq-marketplace/.claude-plugins/gh-ops/scripts/gh-reply-review-thread:*)",
       "Bash(~/.claude/plugins/marketplaces/tq-marketplace/.claude-plugins/gh-ops/scripts/gh-resolve-review-thread:*)",
-      "Bash(/Users/mh4gf/.claude/plugins/marketplaces/tq-marketplace/.claude-plugins/gh-ops/scripts/gh-resolve-review-thread:*)"
+      "Bash(/Users/mh4gf/.claude/plugins/marketplaces/tq-marketplace/.claude-plugins/gh-ops/scripts/gh-resolve-review-thread:*)",
+      "mcp__notion__notion-create-pages",
+      "mcp__notion__notion-update-page",
+      "mcp__notion__notion-create-comment",
+      "mcp__notion__notion-create-database",
+      "mcp__notion__notion-duplicate-page",
+      "mcp__notion__notion-move-pages",
+      "mcp__notion__notion-update-data-source",
+      "mcp__linear__save_issue",
+      "mcp__linear__save_comment",
+      "mcp__linear__save_document",
+      "mcp__linear__save_project",
+      "mcp__linear__save_initiative",
+      "mcp__linear__save_milestone",
+      "mcp__linear__save_customer",
+      "mcp__linear__save_customer_need",
+      "mcp__linear__save_status_update"
     ],
     "additionalDirectories": [
       "/tmp"
     ]
   },
-  "model": "claude-opus-4-6[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -694,5 +712,6 @@
   "remoteControlAtStartup": false,
   "feedbackSurveyState": {
     "lastShownTime": 1754049856266
-  }
+  },
+  "skipAutoPermissionPrompt": true
 }
