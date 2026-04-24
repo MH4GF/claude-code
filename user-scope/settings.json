@@ -586,6 +586,7 @@
       "/tmp"
     ]
   },
+  "model": "claude-opus-4-6[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -688,7 +689,8 @@
   "effortLevel": "high",
   "plansDirectory": ".claude/plans",
   "skipDangerousModePermissionPrompt": true,
-  "skipAutoPermissionPrompt": true,
+  "teammateMode": "tmux",
+  "remoteControlAtStartup": false,
   "feedbackSurveyState": {
     "lastShownTime": 1754049856266
   }
