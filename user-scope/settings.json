@@ -40,6 +40,7 @@
       "SlashCommand(/issync:*)",
       "mcp__notion__notion-fetch",
       "Skill(prompt-engineer)",
+      "Skill(empirical-prompt-tuning)",
       "Skill(skill-creator)",
       "Skill(issync:plan)",
       "WebFetch(domain:knip.dev)",
