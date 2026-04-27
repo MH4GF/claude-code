@@ -506,7 +506,9 @@
       "Skill(tool-use-steering:improve)",
       "Bash(docker stop:*)",
       "Bash(which:*)",
-      "Bash(git reset --soft:*)"
+      "Bash(git reset --soft:*)",
+      "Bash(cc-human-review:*)",
+      "Bash(pbcopy)"
     ],
     "deny": [
       "Bash(rm -rf /)",
