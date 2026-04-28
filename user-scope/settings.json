@@ -508,9 +508,12 @@
       "Bash(which:*)",
       "Bash(git reset --soft:*)",
       "Bash(cc-human-review:*)",
-      "Bash(pbcopy)"
+      "Bash(pbcopy)",
+      "Bash(gh pr checkout:*)"
     ],
     "deny": [
+      "Bash(gh pr checkout --force:*)",
+      "Bash(gh pr checkout -f:*)",
       "Bash(rm -rf /)",
       "Bash(rm -rf ~)",
       "Bash(rm -rf /*)",
@@ -686,8 +689,8 @@
     "mh4gf-devops-setup@mh4gf-marketplace": false,
     "tq@tq-marketplace": true,
     "frontend-design@claude-plugins-official": true,
-    "gh-ops@tq-marketplace": true,
-    "tool-use-steering@claude-code": true
+    "tool-use-steering@claude-code": true,
+    "gh-ops@tq-marketplace": true
   },
   "extraKnownMarketplaces": {
     "tq-marketplace": {
@@ -712,8 +715,8 @@
   "skipDangerousModePermissionPrompt": true,
   "teammateMode": "tmux",
   "remoteControlAtStartup": false,
+  "skipAutoPermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754049856266
-  },
-  "skipAutoPermissionPrompt": true
+  }
 }
