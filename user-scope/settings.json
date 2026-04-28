@@ -509,6 +509,7 @@
       "Bash(git reset --soft:*)",
       "Bash(cc-human-review:*)",
       "Bash(pbcopy)",
+      "Bash(pbpaste)",
       "Bash(gh pr checkout:*)"
     ],
     "deny": [
