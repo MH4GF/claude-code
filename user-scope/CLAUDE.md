@@ -35,7 +35,7 @@
 # External Service Writes
 
 - **Draft before MCP write** - Before creating/updating content via MCP (Linear, Notion, Slack, etc.), write a markdown draft to `.claude/tmp/` and get user approval before executing
-- **Preview with `cc-human-review`** - When creating markdown for user review, run `cc-human-review <file>` to open it in a tmux split pane with nvim
+- **Preview with `cc-human-review`** - When creating markdown for user review, run `cc-human-review <file>` to open it in a tmux split pane with nvim. Run only once per file—nvim auto-reloads on external edits, so subsequent `Edit`s do NOT require re-running the command
 
 # Plan Mode
 
