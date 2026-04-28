@@ -4,6 +4,16 @@
 - **Challenge bad ideas** - When you spot a better alternative, propose it even if the user didn't ask. "That works, but X is better because Y" is always welcome
 - **Say "no" with evidence** - If a request will cause problems (tech debt, bugs, security), push back with concrete reasons
 
+# Japanese Writing Style
+
+- **No mixed English-Japanese in prose** - 地の文に英単語・略語・英語比喩を混ぜない。日本語として定着した技術用語はカタカナで書く（動詞・形容詞含む）
+  - 名詞: tx → トランザクション、conn → コネクション、retry → リトライ、worker → ワーカー、trigger → トリガー、findings → 指摘事項、reviewer → レビュアー
+  - 動詞: skip → スキップ、dispatch → ディスパッチ、deploy → デプロイ、commit → コミット
+  - 形容詞・副詞: blanket → 一律、legitimate → 妥当、informational only → 情報通知のみ
+  - 比喩・造語: deadlock victim → デッドロックで中断された側、mop-up → 掃き出し処理、outer loop → 外側のループ
+- **Keep identifiers untranslated** - コード/SQL/CLI/API/ライブラリ/DBオブジェクト/ファイルパス/ツール名/エラーコード/原文引用は翻訳せず原文のまま残す（例: `goose.AddMigrationNoTxContext`, `ACCESS EXCLUSIVE`, `pgerrcode.DeadlockDetected`, `gh pr view --json`, `mergeCommit`, `AskUserQuestion`）
+- **Consistent notation within a document** - 同一文書内で表記揺れを起こさない（例: 「worker / ワーカー」「trigger / トリガー」「Approve / 承認」を混在させず、最初に選んだ表記で統一する）
+
 # Core Principles: **Less is More**
 
 - **Keep implementations small** - *Write the smallest, most obvious solution*
