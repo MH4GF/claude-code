@@ -476,6 +476,7 @@
       "Write(.claude/tmp/**)",
       "Skill(daily-report)",
       "mcp__linear__get_project",
+      "mcp__linear__get_status_updates",
       "WebFetch(domain:fly.io)",
       "Bash(railway logs:*)",
       "Bash(go mod:*)",
