@@ -325,6 +325,12 @@
       "WebFetch(domain:registry.terraform.io)",
       "Bash(gcloud run services describe:*)",
       "Bash(gcloud run services list:*)",
+      "Bash(gcloud run revisions describe:*)",
+      "Bash(gcloud run revisions list:*)",
+      "Bash(gcloud sql instances describe:*)",
+      "Bash(gcloud sql instances list:*)",
+      "Bash(gcloud sql databases list:*)",
+      "Bash(which:*)",
       "Bash(gog calendar update --help:*)",
       "Bash(~/.claude/skills/github-pr/gh-unresolved-threads:*)",
       "mcp__linear__list_issue_labels",
@@ -689,25 +695,24 @@
     "qa@mh4gf-marketplace": true,
     "gopls-lsp@claude-plugins-official": true,
     "mh4gf-devops-setup@mh4gf-marketplace": false,
-    "tq@tq-marketplace": true,
     "frontend-design@claude-plugins-official": true,
     "tool-use-steering@claude-code": true,
-    "gh-ops@tq-marketplace": true
+    "gh-ops@tq-marketplace": true,
+    "tq@tq-marketplace": true
   },
   "extraKnownMarketplaces": {
-    "tq-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "MH4GF/tq"
-      },
-      "autoUpdate": true
-    },
     "claude-code": {
       "source": {
         "source": "github",
         "repo": "MH4GF/claude-code"
       },
       "autoUpdate": true
+    },
+    "tq-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "mh4gf/tq"
+      }
     }
   },
   "language": "日本語",
