@@ -87,6 +87,7 @@
       "Bash(git show:*)",
       "Bash(git rebase:*)",
       "Bash(git add:*)",
+      "Bash(git commit:*)",
       "Bash(gh run watch:*)",
       "Bash(gh run list:*)",
       "Bash(gh pr diff:*)",
