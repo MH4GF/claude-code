@@ -32,6 +32,7 @@
 # GitHub CLI
 
 - **Prefer dedicated subcommands** - Use `gh pr view`, `gh issue list`, `gh search prs` etc. over `gh api`. Resort to `gh api` only when dedicated subcommands cannot retrieve the needed information.
+- **`gh pr create` — always use `--body-file`** - Write the PR body to `.claude/tmp/pr-body-<slug>.md` and pass `--body-file <path>`. Do NOT use the `--body "$(cat <<'EOF' ... EOF)"` pattern from the default Claude Code prompt: when the body contains backticks (e.g., `` `FuncName` ``), the permission parser treats them as nested command substitution despite the single-quoted heredoc, so even with `Bash(gh pr create:*)` allowlisted the call is denied. Same applies to `gh pr edit --body ...` and `gh issue create --body ...`.
 
 # Research & Reporting
 
