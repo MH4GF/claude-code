@@ -45,7 +45,7 @@
 
 # External Service Writes
 
-- **Draft before MCP write** - Before creating/updating content via MCP (Linear, Notion, Slack, etc.), write a markdown draft to `.claude/tmp/` and get user approval before executing
+- **Draft before MCP write** - Before creating/updating content via MCP, write a markdown draft to `.claude/tmp/` and get user approval before executing. Applies to (non-exhaustive): `mcp__notion__notion-create-pages`, `mcp__notion__notion-update-page` (both `update_content` and `replace_content`), `mcp__notion__notion-create-comment`, `mcp__linear__save_issue`, `mcp__linear__save_comment`, `mcp__linear__save_document`, `mcp__linear__save_status_update`, `mcp__claude_ai_Slack__slack_send_message`. Status-only field updates (e.g. moving a Linear issue to "Done" without body changes) are exempt; body/content changes are not
 - **Preview with `cc-human-review`** - When creating markdown for user review, run `cc-human-review <file>` to open it in a tmux split pane with nvim. Run only once per file—nvim auto-reloads on external edits, so subsequent `Edit`s do NOT require re-running the command
 
 # Plan Mode
