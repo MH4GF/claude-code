@@ -42,6 +42,7 @@
 # Temporary Files
 
 - **Use `.claude/tmp/`** - NEVER write temporary documents to `/tmp/`. Always use `.claude/tmp/` in the current working directory. Temporary investigation results, drafts, and intermediate outputs are reusable across sessions; `/tmp/` is ephemeral and hard to explore.
+- **Prefer `Write` over `mkdir -p` + `cat > heredoc`** - `Write` auto-creates parent directories and bypasses the Bash mkdir sandbox block. Use it for any new file creation in `.claude/tmp/`. Reserve heredoc only for cases where the file content is a small, executable snippet that you immediately pipe to another command.
 
 # External Service Writes
 
