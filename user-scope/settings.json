@@ -701,7 +701,8 @@
     "frontend-design@claude-plugins-official": true,
     "tool-use-steering@claude-code": true,
     "gh-ops@tq-marketplace": true,
-    "tq@tq-marketplace": true
+    "tq@tq-marketplace": true,
+    "skill-creator@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-code": {
