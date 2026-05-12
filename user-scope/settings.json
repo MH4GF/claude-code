@@ -518,7 +518,9 @@
       "Bash(cc-human-review:*)",
       "Bash(pbcopy)",
       "Bash(pbpaste)",
-      "Bash(gh pr checkout:*)"
+      "Bash(gh pr checkout:*)",
+      "mcp__notion__notion-get-teams",
+      "Skill(session-log)"
     ],
     "deny": [
       "Bash(gh pr checkout --force:*)",
