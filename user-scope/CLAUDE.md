@@ -29,6 +29,10 @@
 - **Describe the change, not the trigger** - Commit messages MUST state what changed, never the process that caused it (e.g., "address review feedback" is banned—describe the actual change instead)
 - **No `git -C`** - Always run git commands from within the target directory. Use `cd <path> && git ...` instead of `git -C <path> ...`
 
+# Bash
+
+- **Don't reflexively pipe short-output commands** - `2>&1`, `| tail -N`, `| head -N` をコマンドに付けると、prefix ベースの allow 判定が壊れ余分な許可プロンプトになる。Bash ツールは stderr を既に取得し長出力を切詰めるため両方とも冗長。`gh api ... | base64 -d` のように出力を実際に変換・フィルタする必要がある時だけ使う
+
 # GitHub CLI
 
 - **Prefer dedicated subcommands** - Use `gh pr view`, `gh issue list`, `gh search prs` etc. over `gh api`. Resort to `gh api` only when dedicated subcommands cannot retrieve the needed information.
