@@ -1,5 +1,6 @@
 ---
 description: 全リポジトリの settings.local.json から許可設定を収集し、グローバル設定への追加候補を判定する。追加自体は別 action にディスパッチする
+context: fork
 allowed-tools: Bash(bash *collect_permissions.sh*), Read(~/.claude/settings.json)
 ---
 

@@ -1,5 +1,6 @@
 ---
 name: codex-review
+context: fork
 description: codex review CLIを使用したコードレビュー。セルフレビュー、PR作成前チェック、コミット確認に使用。「レビューして」「変更を確認して」で発動
 ---
 
