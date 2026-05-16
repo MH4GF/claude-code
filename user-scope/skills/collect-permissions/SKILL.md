@@ -36,10 +36,11 @@ bash ~/.claude/skills/collect-permissions/scripts/collect_permissions.sh
 
 **追加候補 1 件以上** — `/tq:create-action` で settings.json 追加 action をディスパッチ。複数候補は 1 つの action にまとめる。
 
-instruction の形式:
+instruction の形式 (見出しは `**bold**` 形式で書く。`## ` 形式の markdown headers は使わない —
+Bash の built-in safety `Newline followed by # inside a quoted argument` に deny される):
 
 ````
-~/.claude/settings.json (claude-code リポジトリの user-scope/settings.json) の permissions.allow に以下を追加してください。アルファベット順を維持し、追加後 /commit で claude-code リポジトリにコミット:
+claude-code リポジトリの user-scope/settings.json (= ~/.claude/settings.json の symlink 先) の permissions.allow に以下を追加してください。アルファベット順を維持し、追加後 /commit で claude-code リポジトリにコミット:
 
 - "<entry1>" — <理由>
 - "<entry2>" — <理由>
