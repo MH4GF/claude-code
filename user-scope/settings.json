@@ -662,6 +662,15 @@
             "command": "jq -r '.tool_input.command // empty' | grep -qE '^cd\\b.*(&&|;)\\s*tq\\b' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"tqはカレントディレクトリに依存しません。cdなしで実行してください\"}}' || true"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/comment-guard.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
