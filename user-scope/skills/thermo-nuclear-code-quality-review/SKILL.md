@@ -1,8 +1,7 @@
 ---
 name: thermo-nuclear-code-quality-review
 context: fork
-disable-model-invocation: true
-description: 現在ブランチの diff に対し、保守性・抽象化・モジュラリティ・コード健全性を非妥協的に審査する厳格レビュー。「設計再フレーミング (code judo) で複雑性ごと消す手」を探し、構造の改善余地を必ず提示する。「thermo-nuclear で見て」「厳格レビュー」「設計レベルで見直して」で発動
+description: 現在ブランチの diff に対し、保守性・抽象化・モジュラリティ・コード健全性を非妥協的に審査する厳格レビュー。「設計再フレーミング (code judo) で複雑性ごと消す手」を探し、構造の改善余地を必ず提示する。重く尖ったレビューのため、ユーザーから「thermo-nuclear で見て」「厳格レビュー」「設計レベルで見直して」と明示要求された時、または parallel-review から呼び出された時のみ起動。通常の自走レビューでは使わない
 ---
 
 # Thermo-Nuclear Code Quality Review
