@@ -24,11 +24,15 @@ case "$ext" in
   ts|tsx|js|jsx|mjs|cjs|go) family=c ;;
   json)                     family=json ;;
   yaml|yml|py)              family=hash ;;
+  sql)                      family=sql ;;
   *) exit 0 ;;
 esac
 
-awk_fam=c
-[ "$family" = hash ] && awk_fam=hash
+case "$family" in
+  hash) awk_fam=hash ;;
+  sql)  awk_fam=sql ;;
+  *)    awk_fam=c ;;
+esac
 
 count_comments() {
   printf '%s\n' "$1" | awk -v fam="$awk_fam" '
@@ -41,6 +45,12 @@ count_comments() {
       gsub(/"[^"]*"/, "", line)
       gsub(/\047[^\047]*\047/, "", line)
       if (line ~ /(^|[ \t])#/) c++
+    } else if (fam == "sql") {
+      if (line ~ /^#!/) next
+      gsub(/"[^"]*"/, "", line)
+      gsub(/\047[^\047]*\047/, "", line)
+      gsub(/`[^`]*`/, "", line)
+      if (line ~ /--/ || line ~ /\/\*/) c++
     } else {
       if (line ~ /^#!/) next
       if (line ~ /\/\/go:/) next

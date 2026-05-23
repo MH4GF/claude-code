@@ -23,7 +23,7 @@ This repository hosts both publicly distributed plugins (`.claude-plugins/`) and
 ```bash
 bash tests/test-log-hook.sh      # Logger unit tests (9 cases)
 bash tests/test-aggregate.sh     # Aggregation smoke tests (17 cases)
-bash tests/test-comment-guard.sh # Comment-guard hook tests (20 cases)
+bash tests/test-comment-guard.sh # Comment-guard hook tests (25 cases)
 ```
 
 ## License

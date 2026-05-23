@@ -143,6 +143,31 @@ run_case "bash tool out of scope" \
   "$(jq -nc '{tool_name:"Bash",tool_input:{command:"ls"}}')" \
   allow
 
+# 19. .sql 行コメント追加 → deny
+run_case "sql line comment added" \
+  "$(jq -nc '{tool_name:"Edit",tool_input:{file_path:"/tmp/x.sql",old_string:"SELECT 1;",new_string:"-- comment\nSELECT 1;"}}')" \
+  deny
+
+# 20. .sql ブロックコメント追加 → deny
+run_case "sql block comment added" \
+  "$(jq -nc '{tool_name:"Edit",tool_input:{file_path:"/tmp/x.sql",old_string:"SELECT 1;",new_string:"/* comment */\nSELECT 1;"}}')" \
+  deny
+
+# 21. .sql 文字列リテラル内の -- → allow
+run_case "sql dashes inside string literal" \
+  "$(jq -nc '{tool_name:"Edit",tool_input:{file_path:"/tmp/x.sql",old_string:"SELECT 1;",new_string:"SELECT * FROM t WHERE col = '\''--not a comment'\'';"}}')" \
+  allow
+
+# 22. .sql コメントなし純粋クエリ追加 → allow
+run_case "sql pure query added" \
+  "$(jq -nc '{tool_name:"Edit",tool_input:{file_path:"/tmp/x.sql",old_string:"SELECT 1;",new_string:"SELECT 1;\nSELECT 2 FROM users;"}}')" \
+  allow
+
+# 23. .sql 既存コメント削除のみ → allow
+run_case "sql comment removal" \
+  "$(jq -nc '{tool_name:"Edit",tool_input:{file_path:"/tmp/x.sql",old_string:"-- drop me\nSELECT 1;",new_string:"SELECT 1;"}}')" \
+  allow
+
 echo
 echo "Results: PASS=$pass FAIL=$fail"
 if [ "$fail" -gt 0 ]; then
