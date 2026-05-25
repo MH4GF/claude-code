@@ -1,0 +1,10 @@
+{
+  "name": "claude-code",
+  "private": true,
+  "description": "MH4GF's Claude Code configuration and plugin marketplace",
+  "devDependencies": {
+    "@textlint-ja/textlint-rule-preset-ai-writing": "1.7.0",
+    "textlint": "15.7.1",
+    "textlint-rule-preset-ja-technical-writing": "12.0.2"
+  }
+}
