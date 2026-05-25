@@ -140,7 +140,7 @@ if [ -n "$usage_json" ]; then
     printf -v five_int "%.0f" "$five_util" 2>/dev/null || five_int="${five_util%%.*}"
     five_color=$(color_for_pct "$five_int")
     five_bar=$(progress_bar "$five_int")
-    line2="$(printf '%b⏱ 5h%b  %b  %b%s%%%b' "$five_color" "$RESET" "$five_bar" "$five_color" "$five_int" "$RESET")"
+    line2="$(printf '%b5h%b  %b  %b%s%%%b' "$five_color" "$RESET" "$five_bar" "$five_color" "$five_int" "$RESET")"
     five_reset_str=""
     [ -n "$five_reset" ] && five_reset_str=$(format_5h_reset "$five_reset")
     [ -n "$five_reset_str" ] && line2+="$(printf '  %b%s%b' "$GRAY" "$five_reset_str" "$RESET")"
@@ -150,7 +150,7 @@ if [ -n "$usage_json" ]; then
     printf -v seven_int "%.0f" "$seven_util" 2>/dev/null || seven_int="${seven_util%%.*}"
     seven_color=$(color_for_pct "$seven_int")
     seven_bar=$(progress_bar "$seven_int")
-    line3="$(printf '%b📅 7d%b  %b  %b%s%%%b' "$seven_color" "$RESET" "$seven_bar" "$seven_color" "$seven_int" "$RESET")"
+    line3="$(printf '%b7d%b  %b  %b%s%%%b' "$seven_color" "$RESET" "$seven_bar" "$seven_color" "$seven_int" "$RESET")"
     seven_reset_str=""
     [ -n "$seven_reset" ] && seven_reset_str=$(format_7d_reset "$seven_reset")
     [ -n "$seven_reset_str" ] && line3+="$(printf '  %b%s%b' "$GRAY" "$seven_reset_str" "$RESET")"
