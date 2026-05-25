@@ -517,6 +517,7 @@
       "Bash(which:*)",
       "Bash(git reset --soft:*)",
       "Bash(cc-human-review:*)",
+      "Bash(~/.claude/hooks/textlint-guard.sh:*)",
       "Bash(pbcopy)",
       "Bash(pbpaste)",
       "Bash(gh pr checkout:*)",
@@ -680,6 +681,15 @@
           {
             "type": "command",
             "command": "jq -r '.tool_input.file_path | select(endswith(\".js\") or endswith(\".ts\") or endswith(\".jsx\") or endswith(\".tsx\"))' | xargs -r npx biome check --write --unsafe"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/textlint-guard.sh"
           }
         ]
       }
