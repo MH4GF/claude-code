@@ -67,6 +67,7 @@
       "Bash(grep:*)",
       "Bash(go test:*)",
       "Bash(go build:*)",
+      "Bash(go clean:*)",
       "Bash(go vet:*)",
       "Bash(go install:*)",
       "Bash(make:*)",
