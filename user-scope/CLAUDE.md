@@ -28,6 +28,8 @@
 - **No "why" in code comments** - History lives in commits, not in code
 - **Describe the change, not the trigger** - Commit messages MUST state what changed, never the process that caused it (e.g., "address review feedback" is banned—describe the actual change instead)
 - **No `git -C`** - Always run git commands from within the target directory. Use `cd <path> && git ...` instead of `git -C <path> ...`
+- **No `git add -A` / `git add .`** - Stage files individually by path to avoid accidentally including secrets, build artifacts, or unrelated WIP. Use `git add <file1> <file2> ...` even for multi-file commits.
+- **`git commit` — use `-F` for multiline or colon-containing messages** - When the commit title or body contains `:`, backticks, or `$`, the `git commit -m "$(cat <<'EOF' ... EOF)"` pattern can confuse the permission parser and trigger denials. Write the message to `.claude/tmp/commit-msg-<slug>.md` and pass `git commit -F <path>`, or use `git commit -F - <<'EOF' ... EOF` with no surrounding command substitution.
 
 # Bash
 
