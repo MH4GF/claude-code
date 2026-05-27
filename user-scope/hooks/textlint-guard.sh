@@ -3,8 +3,8 @@ set -u
 export PATH="$PATH:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 
 # Write/Edit/MultiEdit 後の Markdown を textlint で検査する PostToolUse hook。
-# 指摘があれば exit 2 で stderr に流し、Claude に修正を促す。
-# 未インストール・対象外・JSON 不正は exit 0 でフェイルセーフ。
+# 指摘・前提崩れ（未インストール / config 欠落）は exit 2 で stderr に流す。
+# 対象外（.md/.mdx 以外、node_modules/.git 配下、file_path 無し）は exit 0 でスキップ。
 # TEXTLINT_GUARD=off で無効化。
 
 REPO="${TEXTLINT_GUARD_REPO:-/Users/mh4gf/ghq/github.com/MH4GF/claude-code}"
@@ -28,12 +28,15 @@ esac
 
 if [ ! -x "$BIN" ]; then
   echo "[textlint-guard] $REPO に textlint が未インストール。'cd $REPO && npm install' を実行してください" >&2
-  exit 0
+  exit 2
 fi
 
-[ -f "$CONFIG" ] || exit 0
+if [ ! -f "$CONFIG" ]; then
+  echo "[textlint-guard] $CONFIG が見つかりません" >&2
+  exit 2
+fi
 
-cd "$REPO" || exit 0
+cd "$REPO" || { echo "[textlint-guard] cd $REPO に失敗" >&2; exit 2; }
 out=$("$BIN" -c "$CONFIG" --no-color "$file_path" 2>&1)
 rc=$?
 if [ "$rc" -ne 0 ]; then
