@@ -5,7 +5,9 @@
     }
   },
   "rules": {
-    "preset-ja-technical-writing": true,
+    "preset-ja-technical-writing": {
+      "ja-no-mixed-period": false
+    },
     "@textlint-ja/preset-ai-writing": true
   }
 }
