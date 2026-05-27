@@ -750,5 +750,6 @@
   "skipAutoPermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754049856266
-  }
+  },
+  "agentPushNotifEnabled": true
 }
