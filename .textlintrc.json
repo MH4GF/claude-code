@@ -6,7 +6,10 @@
   },
   "rules": {
     "preset-ja-technical-writing": {
-      "ja-no-mixed-period": false
+      "ja-no-mixed-period": false,
+      "sentence-length": {
+        "max": 120
+      }
     },
     "@textlint-ja/preset-ai-writing": true,
     "prh": {
