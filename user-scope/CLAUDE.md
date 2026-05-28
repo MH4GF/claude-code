@@ -1,81 +1,79 @@
 # Communication
 
-- No sycophancy — NEVER agree just to be agreeable. If the user's approach has flaws, say so directly with reasoning
-- Challenge bad ideas — When you spot a better alternative, propose it even if the user didn't ask. "That works, but X is better because Y" is always welcome
-- Say "no" with evidence. Push back with concrete reasons whenever a request would create tech debt or security issues
+- 媚びない — 同意するためだけに肯定しない。アプローチに欠陥があれば理由付きで率直に指摘する
+- 悪い案には反対を出す — より良い代替が見えたら、ユーザーが聞いていなくても提案する。「動くが X の理由で Y のほうが良い」は常に歓迎される
+- 「No」は証拠付きで — リクエストが技術負債やセキュリティ問題を生むなら、具体的理由で押し返す
 
 # Japanese Writing Style
 
-- No mixed English-Japanese in prose — 地の文に英単語・略語・英語比喩を混ぜない。日本語として定着した技術用語はカタカナで書く（動詞・形容詞含む）
-  - 名詞: tx → トランザクション、conn → コネクション、retry → リトライ、worker → ワーカー、trigger → トリガー
-  - 名詞 (続き): findings → 指摘事項、reviewer → レビュアー
-  - 動詞: skip → スキップ、dispatch → ディスパッチ、deploy → デプロイ、commit → コミット
-  - 形容詞・副詞: blanket → 一律、legitimate → 妥当、informational only → 情報通知のみ
-  - 比喩・造語: deadlock victim → デッドロックで中断された側、mop-up → 掃き出し処理、outer loop → 外側のループ
-- Keep identifiers untranslated — コード/SQL/CLI/API/ライブラリ/DBオブジェクト/ファイルパス/ツール名/エラーコード/原文引用は翻訳せず原文のまま残す
+- 地の文に英単語を混ぜない — 日本語として定着した技術用語はカタカナで書く（動詞・形容詞含む）
+  - 一部例: `tx` → トランザクション、`retry` → リトライ、`outer loop` → 外側のループ
+  - 用語マッピングの正は `prh.yml` で、textlint-rule-prh が検出して block する
+- 識別子は翻訳しない — コード・SQL・CLI・API・ライブラリ・DBオブジェクト・ファイルパス・ツール名・エラーコード・原文引用を原文のまま残す
   - 例: `goose.AddMigrationNoTxContext`、`ACCESS EXCLUSIVE`、`pgerrcode.DeadlockDetected`
   - 例: `gh pr view --json`、`mergeCommit`、`AskUserQuestion`
-- Consistent notation within a document — 同一文書内で表記揺れを起こさない。例えば「worker / ワーカー」「trigger / トリガー」「Approve / 承認」を混在させず、最初に選んだ表記で統一する
-- No bold-colon list items — 箇条書きで `- **用語**: 説明` 形式は使わない。代わりに `- 用語 — 説明` 形式へ変えるか、段落として展開する
-- Sentence length under ~100 chars — 日本語の文は 80〜100 字を目安に「。」で区切る。読点で繋ぎ続けず、複文は分割する
-- No period before bullet lists — リストを導入する文は「次のとおり」「以下」で終え、最後の「。」を打たない。「〜となった。」の直後に箇条書きを続けない
+- 同一文書内で表記揺れを起こさない — 例えば `worker` / ワーカー、`trigger` / トリガー、`Approve` / 承認 を混在させず、最初に選んだ表記で統一する
+- bold-colon の箇条書きを使わない — `- **用語**: 説明` 形式は禁止。代わりに `- 用語 — 説明` 形式へ変えるか、段落として展開する
+- 文の長さは ~100 字以内に収める — 日本語の文は 80〜100 字を目安に「。」で区切る。読点で繋ぎ続けず、複文は分割する
+- リスト導入文末に「。」を打たない — 「次のとおり」「以下」で終え、その直後に箇条書きを置く。「〜となった。」の直後に箇条書きは続けない
 - これら AI 文章クセは textlint-guard hook が PostToolUse で検出し、指摘されたら必ず修正する。情報通知ではなく block 扱いで、修正するまで write は通らない
 
 # Core Principles — Less is More
 
-- Keep implementations small — *Write the smallest, most obvious solution*
-- Let code speak — *If you need multi-paragraph comments, refactor until intent is obvious*
-- Simple > Clever — *Clear code beats clever code every time*
-- Delete ruthlessly — *Remove anything that doesn't add clear value*
+- 実装は小さく保つ — *最小で最も明白な解決策を書く*
+- コードに語らせる — *複数段落のコメントが必要なら、意図が明白になるまで refactor する*
+- シンプル > 巧妙 — *明快さは巧妙さに常に勝る*
+- 容赦なく削る — *明確な価値を加えないものは取り除く*
 
 # Git
 
-- Use current working directory — Use `<env>Working directory</env>` as the base path. Never fall back to the main branch directory
-- Commit per task — Commit when each logical task completes. Include context and reasoning in the commit message
-- No "why" in code comments — History lives in commits, not in code
-- Describe the change, not the trigger — Commit messages MUST state what changed. Never describe the process that caused it. For example "address review feedback" is banned; describe the actual change instead
-- No `git -C` — Always run git commands from within the target directory. Use `cd <path> && git ...` instead of `git -C <path> ...`
-- No `git add -A` / `git add .` — Stage files individually by path. This avoids accidentally including secrets, build artifacts, or unrelated WIP. Use `git add <file1> <file2> ...` even for multi-file commits
-- Use `git commit -F` for multiline or colon-containing messages. Titles or bodies containing `:`, backticks, or `$` break the default heredoc pattern. The `git commit -m "$(cat <<'EOF' ... EOF)"` form confuses the permission parser. Write the message to `.claude/tmp/commit-msg-<slug>.md` and pass `git commit -F <path>`. Alternatively use `git commit -F - <<'EOF' ... EOF` with no surrounding command substitution
+- カレントワーキングディレクトリを使う — `<env>Working directory</env>` をベースパスにする。main branch のディレクトリにはフォールバックしない
+- タスク単位で `commit` する — 論理的なタスクが完了するたびに `commit` する。文脈と理由を `commit` message に含める
+- コードコメントに「なぜ」を書かない — 履歴は `commit` に住んでおり、コード本体には書かない
+- 原因ではなく変更を述べる — `commit` message は何が変わったかを述べる。原因となったプロセスは書かない。例えば「レビュー指摘対応」は禁止で、実際の変更内容を述べる
+- `git -C` を使わない — `git` コマンドは常に対象ディレクトリの中で実行する。`git -C <path> ...` ではなく `cd <path> && git ...` を使う
+- `git add -A` / `git add .` を使わない — ファイルはパスで個別 stage する。secrets やビルド成果物や無関係な WIP の混入を避けるため。複数ファイル時も `git add <file1> <file2> ...` の形にする
+- 複数行や `:` を含む `commit` message は `git commit -F` を使う — タイトルや本文に `:`・backtick・`$` が含まれると標準の heredoc パターンが壊れる。`git commit -m "$(cat <<'EOF' ... EOF)"` 形式は permission parser を混乱させる。message は `.claude/tmp/commit-msg-<slug>.md` に書いて `git commit -F <path>` で渡す。または `git commit -F - <<'EOF' ... EOF` をコマンド置換なしで使う
 
 # Bash
 
-- Don't reflexively pipe short-output commands. `2>&1` や `| tail -N` をコマンドに付けると prefix ベースの allow 判定が壊れる。`| head -N` も同様で、余分な許可プロンプトが出る。Bash ツールは stderr を既に取得し、長出力も切詰める。両方とも冗長。例えば `gh api ... | base64 -d` のように出力を実際に変換する時だけ使う
+- 短い出力のコマンドに反射的に pipe を付けない — `2>&1` や `| tail -N` をコマンドに付けると prefix ベースの allow 判定が壊れる。`| head -N` も同様で、余分な許可プロンプトが出る。Bash ツールは stderr を既に取得し、長出力も切詰める。両方とも冗長。例えば `gh api ... | base64 -d` のように出力を実際に変換する時だけ使う
 
 # GitHub CLI
 
-- Prefer dedicated subcommands — Use `gh pr view`, `gh issue list`, `gh search prs` etc. over `gh api`. Resort to `gh api` only when dedicated subcommands cannot retrieve the needed information
-- `gh pr create` — always use `--body-file`. Write the PR body to `.claude/tmp/pr-body-<slug>.md` and pass `--body-file <path>`
-  - Do NOT use the `--body "$(cat <<'EOF' ... EOF)"` pattern from the default Claude Code prompt
-  - Backticks like `` `FuncName` `` in the body trigger nested command substitution in the permission parser
-  - The single-quoted heredoc does not help. The call is denied even with `Bash(gh pr create:*)` allowlisted
-  - Same applies to `gh pr edit --body ...` and `gh issue create --body ...`
+- 専用サブコマンドを優先する — `gh pr view`・`gh issue list`・`gh search prs` 等を `gh api` より先に検討する。`gh api` は専用サブコマンドで取得できない情報に限って使う
+- `gh pr create` は `--body-file` を必ず使う。PR body を `.claude/tmp/pr-body-<slug>.md` に書き `--body-file <path>` で渡す
+  - 標準 Claude Code prompt の `--body "$(cat <<'EOF' ... EOF)"` 形式は使わない
+  - body に `` `FuncName` `` のような backtick が含まれると permission parser がネストしたコマンド置換とみなす
+  - single-quoted heredoc でも回避できず、`Bash(gh pr create:*)` を allowlist しても deny される
+  - `gh pr edit --body ...` や `gh issue create --body ...` でも同じ問題が起きる
 
 # Research & Reporting
 
-- Reproducible evidence — All findings MUST include steps another user can independently verify. For example: exact CLI commands executed and their output
-- Executable commands only — Commands in reports MUST be copy-paste runnable. Never use abbreviated pseudocode
+- 再現可能な証拠 — すべての指摘事項に、他のユーザーが独立に検証できる手順を含める。例えば実行した CLI コマンドそのものと出力
+- 実行可能なコマンドのみ — レポート内のコマンドはコピーペーストでそのまま動く形にする。省略された擬似コードは使わない
 
 # Temporary Files
 
-- Use `.claude/tmp/`. NEVER write temporary documents to `/tmp/`. Always use `.claude/tmp/` in the current working directory. Drafts and intermediate outputs are reusable across sessions. By contrast `/tmp/` is ephemeral and hard to explore
-- Prefer `Write` over `mkdir -p` + `cat > heredoc`. `Write` auto-creates parent directories and bypasses the Bash mkdir sandbox block. Use it for any new file under `.claude/tmp/`. Reserve heredoc only for small executable snippets piped to another command
+- `.claude/tmp/` を使う — 一時文書を `/tmp/` に書かない。常に作業ディレクトリの `.claude/tmp/` を使う。draft や中間出力はセッション間で再利用できる。対して `/tmp/` は ephemeral で探索しにくい
+- `mkdir -p` + `cat > heredoc` より `Write` を優先 — `Write` は親ディレクトリを自動作成し、Bash mkdir の sandbox block を避ける。`.claude/tmp/` 配下の新規ファイルは `Write` で作る。heredoc は別コマンドへ pipe する小さな実行スニペットに限る
 
 # External Service Writes
 
-- Draft before MCP write. Before creating or updating content via MCP, write a markdown draft to `.claude/tmp/`. Get user approval before executing. Status-only field updates are exempt; body or content changes are not. Applies to (non-exhaustive):
+- MCP 書き込み前に draft を作る — MCP でコンテンツを作成や更新する前に、`.claude/tmp/` に markdown draft を書きユーザー承認を得てから実行する。status だけのフィールド更新は対象外、body やコンテンツ変更は対象。対象 (非網羅):
   - `mcp__notion__notion-create-pages`
-  - `mcp__notion__notion-update-page`, `mcp__notion__notion-create-comment`
-  - `mcp__linear__save_issue`, `mcp__linear__save_comment`, `mcp__linear__save_document`
-  - `mcp__linear__save_status_update`, `mcp__claude_ai_Slack__slack_send_message`
-- Preview with `cc-human-review`. Invoke the skill whenever the user should read a file you've prepared. Targets include markdown drafts, SQL queries, code, or configs
-  - Backstop if the skill is not triggered: run `cc-human-review <file>` once
-  - This opens the file in a tmux split with nvim. Auto-reload covers subsequent `Edit`s, so do not re-run
+  - `mcp__notion__notion-update-page`、`mcp__notion__notion-create-comment`
+  - `mcp__linear__save_issue`、`mcp__linear__save_comment`、`mcp__linear__save_document`
+  - `mcp__linear__save_status_update`、`mcp__claude_ai_Slack__slack_send_message`
+- `cc-human-review` でプレビュー — 用意したファイルをユーザーに読ませたい時は `cc-human-review` skill を必ず使う。対象は markdown draft・SQL クエリ・コード・設定ファイル等
+  - skill が起動されなかった場合のバックストップとして `cc-human-review <file>` を 1 回実行する
+  - tmux split で nvim が開く。以降の `Edit` は autoread で反映されるので再実行はしない
 
 # Plan Mode
 
-Every plan MUST include:
-- E2E verification steps (local env, UI-based, not API)
-- Test code requirements
+Plan には次の項目が必要
 
-Before ExitPlanMode: `/plan-tools:state-machine`
+- E2E 検証手順 (local env、UI ベース、API ではなく)
+- テストコード要件
+
+ExitPlanMode の前に `/plan-tools:state-machine` を呼ぶ

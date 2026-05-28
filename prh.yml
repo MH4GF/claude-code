@@ -1,0 +1,44 @@
+version: 1
+
+rules:
+  # 名詞
+  - expected: トランザクション
+    pattern: /\btx\b/i
+  - expected: コネクション
+    pattern: /\bconn\b/i
+  - expected: リトライ
+    pattern: /\bretry\b/i
+  - expected: ワーカー
+    pattern: /\bworker\b/i
+  - expected: トリガー
+    pattern: /\btrigger\b/i
+  - expected: 指摘事項
+    pattern: /\bfindings\b/i
+  - expected: レビュアー
+    pattern: /\breviewer\b/i
+
+  # 動詞
+  - expected: スキップ
+    pattern: /\bskip\b/i
+  - expected: ディスパッチ
+    pattern: /\bdispatch\b/i
+  - expected: デプロイ
+    pattern: /\bdeploy\b/i
+  - expected: コミット
+    pattern: /\bcommit\b/i
+
+  # 形容詞・副詞
+  - expected: 一律
+    pattern: /\bblanket\b/i
+  - expected: 妥当
+    pattern: /\blegitimate\b/i
+  - expected: 情報通知のみ
+    pattern: /\binformational only\b/i
+
+  # 比喩・造語
+  - expected: デッドロックで中断された側
+    pattern: /\bdeadlock victim\b/i
+  - expected: 掃き出し処理
+    pattern: /\bmop-up\b/i
+  - expected: 外側のループ
+    pattern: /\bouter loop\b/i
