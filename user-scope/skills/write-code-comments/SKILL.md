@@ -1,9 +1,7 @@
 ---
 name: write-code-comments
 description: ユーザーが明示的に指示したコードコメントを記述する。通常のコード編集ではコメント追加が comment-guard hook でブロックされるため、コメント記述が必要なときにこのスキルを使う。
-context: fork
 disable-model-invocation: true
-allowed-tools: Read, Grep, Glob, Edit, Write, MultiEdit, Bash(rm:*)
 ---
 
 ユーザー指示に従いコードコメントを記述する。`comment-guard` hook はマーカーファイルが存在する間だけコメント付き編集を許可するため、下記の手順を厳守する。
@@ -47,7 +45,7 @@ allowed-tools: Read, Grep, Glob, Edit, Write, MultiEdit, Bash(rm:*)
 
 ### 3. マーカーを削除
 
-作業が完了または中断したら、必ずマーカーを削除する:
+作業が完了または中断したら、次のコマンドでマーカーを必ず削除する。
 
 ```
 rm -f .claude/tmp/.comment-guard-allow
