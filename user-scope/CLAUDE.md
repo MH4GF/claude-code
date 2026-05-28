@@ -16,6 +16,10 @@
   - 例: `goose.AddMigrationNoTxContext`、`ACCESS EXCLUSIVE`、`pgerrcode.DeadlockDetected`
   - 例: `gh pr view --json`、`mergeCommit`、`AskUserQuestion`
 - Consistent notation within a document — 同一文書内で表記揺れを起こさない。例えば「worker / ワーカー」「trigger / トリガー」「Approve / 承認」を混在させず、最初に選んだ表記で統一する
+- No bold-colon list items — 箇条書きで `- **用語**: 説明` 形式は使わない。代わりに `- 用語 — 説明` 形式へ変えるか、段落として展開する
+- Sentence length under ~100 chars — 日本語の文は 80〜100 字を目安に「。」で区切る。読点で繋ぎ続けず、複文は分割する
+- No period before bullet lists — リストを導入する文は「次のとおり」「以下」で終え、最後の「。」を打たない。「〜となった。」の直後に箇条書きを続けない
+- これら AI 文章クセは textlint-guard hook が PostToolUse で検出し、指摘されたら必ず修正する。情報通知ではなく block 扱いで、修正するまで write は通らない
 
 # Core Principles — Less is More
 
