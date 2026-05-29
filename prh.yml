@@ -16,6 +16,16 @@ rules:
     pattern: /\bfindings\b/i
   - expected: レビュアー
     pattern: /\breviewer\b/i
+  - expected: カスタム
+    pattern: /\bcustom\b/i
+  - expected: ツール
+    pattern: /\btool\b/i
+  - expected: アクセス
+    pattern: /\baccess\b/i
+  - expected: トークン
+    pattern: /\btoken\b/i
+  - expected: スコープ
+    pattern: /\bscope\b/i
 
   # 動詞
   - expected: スキップ
@@ -26,6 +36,8 @@ rules:
     pattern: /\bdeploy\b/i
   - expected: コミット
     pattern: /\bcommit\b/i
+  - expected: なりすます
+    pattern: /\bimpersonate\b/i
 
   # 形容詞・副詞
   - expected: 一律
