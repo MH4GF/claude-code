@@ -12,6 +12,7 @@
       }
     },
     "@textlint-ja/preset-ai-writing": true,
+    "no-mid-sentence-break": true,
     "prh": {
       "rulePaths": ["./prh.yml"]
     }
