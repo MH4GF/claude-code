@@ -690,7 +690,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/textlint-guard.sh"
+            "command": "~/.claude/hooks/unslop-guard.sh"
           }
         ]
       }
@@ -747,9 +747,9 @@
   "skipDangerousModePermissionPrompt": true,
   "teammateMode": "tmux",
   "remoteControlAtStartup": false,
+  "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754049856266
-  },
-  "agentPushNotifEnabled": true
+  }
 }
