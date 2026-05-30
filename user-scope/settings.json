@@ -657,6 +657,10 @@
           },
           {
             "type": "command",
+            "command": "jq -r '.tool_input.command // empty' | grep -qE -- '--no-pager' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"git --no-pager は禁止です。Claude Code の Bash には TTY がないため pager は起動しません。--no-pager を外して git <subcommand> として実行してください\"}}' || true"
+          },
+          {
+            "type": "command",
             "command": "jq -r '.tool_input.command // empty' | grep -qE '\\s--help(\\s|$)' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"--help flag is read-only\"}}' || true"
           },
           {
