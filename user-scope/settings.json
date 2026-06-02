@@ -523,7 +523,9 @@
       "Bash(pbpaste)",
       "Bash(gh pr checkout:*)",
       "mcp__notion__notion-get-teams",
-      "Skill(session-log)"
+      "Skill(session-log)",
+      "Bash(mise install:*)",
+      "Bash(tmux select-window:*)"
     ],
     "deny": [
       "Bash(gh pr checkout --force:*)",
