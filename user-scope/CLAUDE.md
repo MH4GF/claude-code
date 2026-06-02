@@ -38,6 +38,7 @@
 # Bash
 
 - 短い出力のコマンドに反射的に pipe を付けない — `2>&1` や `| tail -N` をコマンドに付けると prefix ベースの allow 判定が壊れる。`| head -N` も同様で、余分な許可プロンプトが出る。Bash ツールは stderr を既に取得し、長出力も切詰める。両方とも冗長。例えば `gh api ... | base64 -d` のように出力を実際に変換する時だけ使う
+- ファイルの一部を読むのに `sed -n 'N,Mp'`・`head -N`・`tail -N` を使わない — Read ツールの `offset`/`limit` を使う。行番号付きで返り、permission の摩擦もない。実際にテキストを変換するパイプ処理の時だけ sed を使う
 
 # GitHub CLI
 

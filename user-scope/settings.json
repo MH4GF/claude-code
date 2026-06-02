@@ -528,6 +528,9 @@
       "Bash(tmux select-window:*)"
     ],
     "deny": [
+      "Bash(git add -A:*)",
+      "Bash(git add .:*)",
+      "Bash(git add --all:*)",
       "Bash(gh pr checkout --force:*)",
       "Bash(gh pr checkout -f:*)",
       "Bash(rm -rf /)",
