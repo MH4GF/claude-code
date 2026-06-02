@@ -525,7 +525,15 @@
       "mcp__notion__notion-get-teams",
       "Skill(session-log)",
       "Bash(mise install:*)",
-      "Bash(tmux select-window:*)"
+      "Bash(tmux select-window:*)",
+      "Skill(cc-human-review)",
+      "Skill(tq:triage)",
+      "WebFetch(domain:cursor.com)",
+      "WebFetch(domain:skills.sh)",
+      "WebFetch(domain:status.cloud.google.com)",
+      "WebFetch(domain:support.claude.com)",
+      "WebFetch(domain:turso.tech)",
+      "WebFetch(domain:www.anthropic.com)"
     ],
     "deny": [
       "Bash(git add -A:*)",
