@@ -1,6 +1,5 @@
 ---
 description: 全リポジトリの settings.local.json から許可設定を収集し、グローバル設定への追加候補を判定する。追加自体は別 action にディスパッチする
-context: fork
 allowed-tools: Bash(bash *collect_permissions.sh*), Read(~/.claude/settings.json)
 ---
 
@@ -36,8 +35,7 @@ bash ~/.claude/skills/collect-permissions/scripts/collect_permissions.sh
 
 **追加候補 1 件以上** — `/tq:create-action` で settings.json 追加 action をディスパッチ。複数候補は 1 つの action にまとめる。
 
-instruction の形式 (見出しは `**bold**` 形式で書く。`## ` 形式の markdown headers は使わない —
-Bash の built-in safety `Newline followed by # inside a quoted argument` に deny される):
+instruction の形式は次のとおり。見出しに `**bold**` を使い、`## ` 形式の markdown headers は避ける。`## ` を入れると Bash built-in safety `Newline followed by # inside a quoted argument` で deny される。
 
 ````
 claude-code リポジトリの user-scope/settings.json (= ~/.claude/settings.json の symlink 先) の permissions.allow に以下を追加してください。アルファベット順を維持し、追加後 /commit で claude-code リポジトリにコミット:
