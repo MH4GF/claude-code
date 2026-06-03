@@ -533,7 +533,8 @@
       "WebFetch(domain:status.cloud.google.com)",
       "WebFetch(domain:support.claude.com)",
       "WebFetch(domain:turso.tech)",
-      "WebFetch(domain:www.anthropic.com)"
+      "WebFetch(domain:www.anthropic.com)",
+      "Skill(agent-browser)"
     ],
     "deny": [
       "Bash(git add -A:*)",
