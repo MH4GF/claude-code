@@ -46,4 +46,9 @@ claude-code リポジトリの user-scope/settings.json (= ~/.claude/settings.js
 
 ### 4. auto memory 更新
 
-既存除外ルールでカバーできない新カテゴリを判断した、もしくは `<review_guidelines>` の「引数境界が曖昧」枠で新たに除外した候補がある場合のみ、`feedback_collect_permissions.md` に追記。判断不要なら更新しない。
+`feedback_collect_permissions.md` への追記基準は以下
+
+- 既存除外ルールでカバーできない新カテゴリを判断したとき
+- `<review_guidelines>` の「引数境界が曖昧」枠で新たに除外候補を発見したとき
+
+該当しなければ更新しない。
