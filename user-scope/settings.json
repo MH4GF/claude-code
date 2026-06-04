@@ -523,6 +523,8 @@
       "Bash(pbpaste)",
       "Bash(gh pr checkout:*)",
       "mcp__notion__notion-get-teams",
+      "mcp__notion__notion-get-users",
+      "mcp__figma-developer-mcp__get_figma_data",
       "Skill(session-log)",
       "Bash(mise install:*)",
       "Bash(tmux select-window:*)",
