@@ -38,6 +38,8 @@ rules:
     pattern: /\bcommit\b/i
   - expected: なりすます
     pattern: /\bimpersonate\b/i
+  - expected: 読む / 使う / 利用する / 参照する 等
+    pattern: /消費(?=する|され|させ|し[てた])/
 
   # 形容詞・副詞
   - expected: 一律
