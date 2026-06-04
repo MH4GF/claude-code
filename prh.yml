@@ -26,6 +26,8 @@ rules:
     pattern: /\btoken\b/i
   - expected: スコープ
     pattern: /\bscope\b/i
+  - expected: セクション
+    pattern: /§/
 
   # 動詞
   - expected: スキップ
