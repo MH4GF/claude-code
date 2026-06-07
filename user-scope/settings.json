@@ -16,7 +16,7 @@
       "WebFetch(domain:liambx.com)",
       "WebFetch(domain:smith.langchain.com)",
       "mcp__ide__getDiagnostics",
-      "mcp__playwright__browser_*",
+      "mcp__playwright__*",
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_click",
       "mcp__playwright__browser_console_messages",
