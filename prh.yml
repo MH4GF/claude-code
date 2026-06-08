@@ -28,6 +28,8 @@ rules:
     pattern: /\bscope\b/i
   - expected: セクション
     pattern: /§/
+  - expected: オンボーディング
+    pattern: /\bonboarding\b/i
 
   # 動詞
   - expected: スキップ
