@@ -5,7 +5,8 @@
     "BASH_MAX_TIMEOUT_MS": "1200000",
     "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
     "ENABLE_TOOL_SEARCH": "true",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "TRACE_TO_LANGFUSE": "true"
   },
   "permissions": {
     "allow": [
@@ -744,7 +745,8 @@
     "tool-use-steering@claude-code": true,
     "gh-ops@tq-marketplace": true,
     "tq@tq-marketplace": true,
-    "skill-creator@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "langfuse@langfuse-observability": true
   },
   "extraKnownMarketplaces": {
     "claude-code": {
@@ -759,11 +761,26 @@
         "source": "github",
         "repo": "mh4gf/tq"
       }
+    },
+    "langfuse-observability": {
+      "source": {
+        "source": "github",
+        "repo": "langfuse/Claude-Observability-Plugin"
+      }
     }
   },
   "language": "日本語",
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
+  "pluginConfigs": {
+    "langfuse@langfuse-observability": {
+      "options": {
+        "LANGFUSE_PUBLIC_KEY": "pk-lf-a5519842-3e4a-4bb5-8450-171f1ba16d09",
+        "LANGFUSE_BASE_URL": "http://mac-mini:33000",
+        "CC_LANGFUSE_DEBUG": false
+      }
+    }
+  },
   "plansDirectory": ".claude/plans",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
