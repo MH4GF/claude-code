@@ -776,7 +776,6 @@
     "langfuse@langfuse-observability": {
       "options": {
         "LANGFUSE_PUBLIC_KEY": "pk-lf-a5519842-3e4a-4bb5-8450-171f1ba16d09",
-        "LANGFUSE_BASE_URL": "http://mac-mini:33000",
         "CC_LANGFUSE_DEBUG": false
       }
     }
