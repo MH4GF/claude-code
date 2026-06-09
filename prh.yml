@@ -30,6 +30,10 @@ rules:
     pattern: /§/
   - expected: オンボーディング
     pattern: /\bonboarding\b/i
+  - expected: 秘匿情報
+    pattern: /\bcredentials?\b/i
+  - expected: フラグ
+    pattern: /\bflag(s)?\b/i
 
   # 動詞
   - expected: スキップ
