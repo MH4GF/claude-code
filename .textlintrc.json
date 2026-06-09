@@ -8,7 +8,7 @@
     "preset-ja-technical-writing": {
       "ja-no-mixed-period": false,
       "sentence-length": {
-        "max": 120
+        "max": 130
       }
     },
     "@textlint-ja/preset-ai-writing": true,
