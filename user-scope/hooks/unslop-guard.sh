@@ -13,7 +13,7 @@ file_path=$(jq -r '.tool_input.file_path // empty' <<<"$input" 2>/dev/null) || e
 [ -n "$file_path" ] || exit 0
 
 case "$file_path" in
-  *.md|*.mdx) ;;
+  *.md|*.mdx|*.txt) ;;
   *) exit 0 ;;
 esac
 
