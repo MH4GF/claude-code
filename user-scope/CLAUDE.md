@@ -8,7 +8,7 @@
 
 - 地の文に英単語を混ぜない — 日本語として定着した技術用語はカタカナで書く（動詞・形容詞含む）
   - 一部例: `tx` → トランザクション、`retry` → リトライ、`outer loop` → 外側のループ
-  - 用語マッピングの正は `prh.yml` で、textlint-rule-prh が検出して block する
+  - 用語マッピングの正は `prh.yml` で、unslop が検出して block する
 - 識別子は翻訳しない — コード・SQL・CLI・API・ライブラリ・DBオブジェクト・ファイルパス・ツール名・エラーコード・原文引用を原文のまま残す
   - 例: `goose.AddMigrationNoTxContext`、`ACCESS EXCLUSIVE`、`pgerrcode.DeadlockDetected`
   - 例: `gh pr view --json`、`mergeCommit`、`AskUserQuestion`
@@ -16,7 +16,7 @@
 - bold-colon の箇条書きを使わない — `- **用語**: 説明` 形式は禁止。代わりに `- 用語 — 説明` 形式へ変えるか、段落として展開する
 - 文の長さは ~100 字以内に収める — 日本語の文は 80〜100 字を目安に「。」で区切る。読点で繋ぎ続けず、複文は分割する
 - リスト導入文末に「。」を打たない — 「次のとおり」「以下」で終え、その直後に箇条書きを置く。「〜となった。」の直後に箇条書きは続けない
-- これら AI 文章クセは textlint-guard hook が PostToolUse で検出し、指摘されたら必ず修正する。情報通知ではなく block 扱いで、修正するまで write は通らない
+- これら AI 文章クセは unslop-guard hook が PostToolUse で検出し、指摘されたら必ず修正する。情報通知ではなく block 扱いで、修正するまで write は通らない
 
 # Core Principles — Less is More
 
