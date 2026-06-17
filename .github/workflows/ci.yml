@@ -1,0 +1,14 @@
+name: CI
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unslop:
+    uses: MH4GF/shared-config/.github/workflows/_unslop.yml@5c5599edf2b382eba5c4b1d499a808f273f37af4 # 5c5599e
+    with:
+      config: .textlintrc.json
