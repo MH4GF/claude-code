@@ -523,7 +523,6 @@
       "Bash(which:*)",
       "Bash(git reset --soft:*)",
       "Bash(cc-human-review:*)",
-      "Bash(~/.claude/hooks/textlint-guard.sh:*)",
       "Bash(~/.claude/hooks/unslop-guard.sh:*)",
       "Bash(pbcopy)",
       "Bash(pbpaste)",
