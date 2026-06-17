@@ -74,9 +74,16 @@ brainstorming の議論結果から、次の節構成へ落とす。
 
 `## 参考` 節へ書いてよいのは、bg session の workspace で存在を保証できる path のみ。例として origin/main へ コミット 済みのファイル、関連 Linear issue (`XX-NN`)、公開 URL。scraps/open/ や .claude/tmp/ のような未 コミット の path は書かない。
 
-### 5. title を決める
+### 5. title と label を決める
 
-プロジェクトの慣行に合わせ、80 文字以内、prefix なし、要点 1 文で書く。
+title はプロジェクトの慣行に合わせ、80 文字以内、prefix なし、要点 1 文で書く。
+
+label は次のいずれかから選ぶ。Symphony が WORKFLOW を route するキー。
+
+- `works` — MH4GF/works repo の vault / agents / scripts / Mac mini hermes 等が対象
+- `claude-code` — MH4GF/claude-code repo の user-スコープ skill / hook / plugin / textlint config 等が対象
+
+文脈から自明 (例: 「skills/X に追加して」「daily note の cron が…」) なら自分で決めて宣言する。曖昧なら AskUserQuestion で確定する。label なしでは Symphony が拾わないため必須。
 
 ### 6. MCP で起票する
 
@@ -87,6 +94,7 @@ brainstorming の議論結果から、次の節構成へ落とす。
 - `title`: ステップ 5 で決めた title
 - `description`: ステップ 4 で書いたファイルの中身 (`.claude/tmp/create-linear-issue-body-<slug>.md` を Read して渡す)
 - `state`: project の Todo 相当 state ID (Symphony の `active_states` と一致させる)
+- `labels`: ステップ 5 で選んだ label の配列 (例: `["works"]` または `["claude-code"]`)
 
 戻り値から `identifier` と `url` を取る。
 
@@ -108,6 +116,10 @@ brainstorming と Linear 起票を本セッションで完結させる。別 bg 
 ### Linear MCP `linear-mh4gf` に限定する
 
 Linear MCP は claude のグローバル設定で workspace ごとに別 server として登録される。`mcp__linear__*` や `mcp__linear-<other>__*` が別 workspace の key で起動していると、ai-native の起票指示が誤って別 workspace へ届く。本 skill は `mcp__linear-mh4gf__*` の prefix だけ呼び、別 server を混在させない。
+
+### label で workflow を route する
+
+Symphony は同じ Linear project の中で複数の WORKFLOW.md を並列駆動する。route キーは label。`works` 付き issue を works repo の WORKFLOW が拾う。`claude-code` 付き issue を claude-code repo の WORKFLOW が担当する。label なしの issue はどちらの WORKFLOW からも拾われず宙吊り化する。起票時の label 指定を必須化する。
 
 ### description を単一ソースにする
 
