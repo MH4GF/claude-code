@@ -51,7 +51,7 @@ binary path は `~/ghq/github.com/MH4GF/unslop/target/release/unslop` を hardco
 ```bash
 bash tests/test-log-hook.sh      # Logger unit tests (9 cases)
 bash tests/test-aggregate.sh     # Aggregation smoke tests (17 cases)
-bash tests/test-comment-guard.sh # Comment-guard hook tests (25 cases)
+bash tests/test-comment-guard.sh # Comment-guard hook tests (30 cases)
 ```
 
 ## License
