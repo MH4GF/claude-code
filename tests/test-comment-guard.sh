@@ -168,6 +168,35 @@ run_case "sql comment removal" \
   "$(jq -nc '{tool_name:"Edit",tool_input:{file_path:"/tmp/x.sql",old_string:"-- drop me\nSELECT 1;",new_string:"SELECT 1;"}}')" \
   allow
 
+# 24. 鮮度内マーカー + unslop 違反コメント → deny (AI 文章クセ検出)
+mkdir -p "$WORK/unslop-deny/.claude/tmp"
+: > "$WORK/unslop-deny/.claude/tmp/.comment-guard-allow"
+run_case "fresh marker + unslop violation denies" \
+  "$(jq -nc --arg c "$WORK/unslop-deny" '{tool_name:"Edit",cwd:$c,tool_input:{file_path:"/tmp/x.ts",old_string:"const a=1;",new_string:"// このコードは非常に重要な機能を提供しており、複雑な処理を効率的に実行するために最適化されています。\nconst a=1;"}}')" \
+  deny
+
+# 25. 鮮度内マーカー + unslop バイナリ不在 → fail-open allow
+run_case "fresh marker + missing unslop fails open" \
+  "$(jq -nc --arg c "$WORK/unslop-deny" '{tool_name:"Edit",cwd:$c,tool_input:{file_path:"/tmp/x.ts",old_string:"const a=1;",new_string:"// このコードは非常に重要な機能を提供しており、複雑な処理を効率的に実行するために最適化されています。\nconst a=1;"}}')" \
+  allow "UNSLOP_BIN=/nonexistent"
+
+# 26. 鮮度内マーカー + Py コメント unslop 違反 → deny
+mkdir -p "$WORK/unslop-py/.claude/tmp"
+: > "$WORK/unslop-py/.claude/tmp/.comment-guard-allow"
+run_case "py fresh marker + unslop violation denies" \
+  "$(jq -nc --arg c "$WORK/unslop-py" '{tool_name:"Edit",cwd:$c,tool_input:{file_path:"/tmp/x.py",old_string:"x=1",new_string:"# このコードは非常に重要な機能を提供しており、複雑な処理を効率的に実行するために最適化されています。\nx=1"}}')" \
+  deny
+
+# 27. 鮮度内マーカー + SQL コメント unslop 違反 → deny
+run_case "sql fresh marker + unslop violation denies" \
+  "$(jq -nc --arg c "$WORK/unslop-py" '{tool_name:"Edit",cwd:$c,tool_input:{file_path:"/tmp/x.sql",old_string:"SELECT 1;",new_string:"-- このコードは非常に重要な機能を提供しており、複雑な処理を効率的に実行するために最適化されています。\nSELECT 1;"}}')" \
+  deny
+
+# 28. 鮮度内マーカー + prh 違反のコメント → deny
+run_case "fresh marker + prh violation denies" \
+  "$(jq -nc --arg c "$WORK/unslop-py" '{tool_name:"Edit",cwd:$c,tool_input:{file_path:"/tmp/x.ts",old_string:"const a=1;",new_string:"// tx の retry を実装する\nconst a=1;"}}')" \
+  deny
+
 echo
 echo "Results: PASS=$pass FAIL=$fail"
 if [ "$fail" -gt 0 ]; then
