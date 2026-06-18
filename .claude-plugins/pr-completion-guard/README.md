@@ -1,6 +1,6 @@
 # pr-completion-guard
 
-Stop hook が「PR が merge されるまでセッションを終わらせない」状態を作る plugin。Symphony bg session で「PR Draft → CI green → Ready → merge」を turn 内で押し切らせ、人手介入を例外時のみに減らす。
+Stop hook が「PR が merge されるまでセッションを終わらせない」状態を作る plugin。「PR Draft → CI green → Ready → merge」までセッションを継続させ、人手介入を例外時のみに減らす。
 
 ## 動作
 
@@ -48,15 +48,6 @@ Stop イベント発火時に次の順で状態判定する。未完了の作業
   }
 }
 ```
-
-## Symphony bg session で使う場合の注意
-
-Symphony 経由の bg session でこの hook を機能させるには、workspace の `WORKFLOW.md` で次を満たす必要がある
-
-- `tracker.terminal_states` から `In Review` を外す。Linear gitAutomationStates が PR open で In Review へ動かしても Symphony が ワーカー を terminate しなくなる
-- `terminal_states` に `Human Review Needed` 等の handoff state を追加して、`max_turns` 超過時に人手介入へ抜けられるようにする
-- `agent.max_turns` は CI 待ちと merge までを跨げる値 (例: 6 以上) にする
-- `codex.turn_timeout_ms` は CI green を待てる長さ (例: 1800000) にする
 
 ## 環境変数
 
