@@ -3,8 +3,8 @@ tracker:
   kind: linear
   project_slug: "ai-native-workspace-202646c35423"
   api_key: $LINEAR_API_KEY
-  active_states: ["Todo", "In Review"]
-  terminal_states: ["Done", "Canceled", "Duplicate", "Human Review Needed"]
+  active_states: ["Todo"]
+  terminal_states: ["In Review", "Done", "Canceled", "Duplicate", "Human Review Needed"]
   required_labels: ["claude-code"]
 
 workspace:
