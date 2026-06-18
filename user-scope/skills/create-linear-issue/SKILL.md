@@ -82,8 +82,9 @@ label は次のいずれかから選ぶ。Symphony が WORKFLOW を route する
 
 - `works` — MH4GF/works repo の vault / agents / scripts / Mac mini hermes 等が対象
 - `claude-code` — MH4GF/claude-code repo の user-スコープ skill / hook / plugin / lint config 等が対象
+- `unslop` — MH4GF/unslop repo の Rust 製 lint engine (rule 追加 / fix / golden test 等) が対象
 
-文脈から自明 (例: 「skills/X に追加して」「daily note の cron が…」) なら自分で決めて宣言する。曖昧なら AskUserQuestion で確定する。label なしでは Symphony が拾わないため必須。
+文脈から自明 (例: 「skills/X への変更」「daily note の cron が…」「unslop の rule 追加」) なら自分で決めて宣言する。曖昧なら AskUserQuestion で確定する。label なしでは Symphony が拾わないため必須。
 
 ### 6. MCP で起票する
 
@@ -119,7 +120,7 @@ Linear MCP は claude のグローバル設定で workspace ごとに別 server 
 
 ### label で workflow を route する
 
-Symphony は同じ Linear project の中で複数の WORKFLOW.md を並列駆動する。route キーは label。`works` 付き issue を works repo の WORKFLOW が拾う。`claude-code` 付き issue を claude-code repo の WORKFLOW が担当する。label なしの issue はどちらの WORKFLOW からも拾われず宙吊り化する。起票時の label 指定を必須化する。
+Symphony は同じ Linear project の中で複数の WORKFLOW.md を並列駆動する。route キーは label。`works` 付き issue を works repo の WORKFLOW が拾う。`claude-code` 付き issue を claude-code repo の WORKFLOW が担当する。`unslop` 付き issue を unslop repo の WORKFLOW が拾う。label なしの issue はどの WORKFLOW からも拾われず宙吊り化する。起票時の label 指定を必須化する。
 
 ### description を単一ソースにする
 
