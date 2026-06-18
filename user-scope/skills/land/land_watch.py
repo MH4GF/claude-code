@@ -39,7 +39,7 @@ def is_rate_limit_error(error: str) -> bool:
 async def run_gh(*args: str) -> str:
     max_delay = BASE_GH_BACKOFF_SECONDS * (2 ** (MAX_GH_RETRIES - 1))
     delay_seconds = BASE_GH_BACKOFF_SECONDS
-    last_error = "gh command failed"
+    last_error = "gh コマンド の実行に失敗しました"
     for attempt in range(1, MAX_GH_RETRIES + 1):
         proc = await asyncio.create_subprocess_exec(
             "gh",
@@ -50,7 +50,7 @@ async def run_gh(*args: str) -> str:
         stdout, stderr = await proc.communicate()
         if proc.returncode == 0:
             return stdout.decode()
-        error = stderr.decode().strip() or "gh command failed"
+        error = stderr.decode().strip() or "gh コマンド の実行に失敗しました"
         if not is_rate_limit_error(error):
             raise RuntimeError(error)
         last_error = error
@@ -495,24 +495,24 @@ def raise_on_human_feedback(
     codex_review_comments = filter_codex_review_issue_comments(issue_comments)
     human_review_comments = filter_human_review_comments(review_comments)
     if human_issue_comments or human_review_comments or codex_review_comments:
-        print("Review comments detected. Address before merge.")
+        print("レビュー コメント を検知しました。マージ 前に対応してください。")
         print(
-            "Reminder: decide whether feedback stays in scope; defer if needed "
-            "and note in your root-level update.",
+            "メモ: フィードバック を スコープ 内に留めるかを判断してください。"
+            "必要なら 先送り し、トップレベル 更新 にその旨を残してください。",
         )
         raise SystemExit(2)
     blocking_reviews = filter_blocking_reviews(reviews, review_request_at)
     if blocking_reviews:
-        print("Review states/comments detected. Address before merge.")
+        print("レビュー の ステータス または コメント を検知しました。マージ 前に対応してください。")
         print(
-            "Reminder: keep PR title/description aligned with the full scope "
-            "when changes expand.",
+            "メモ: 変更が広がった時は PR の タイトル と 本文 を"
+            "最終 スコープ に合わせて更新してください。",
         )
         raise SystemExit(2)
 
 
 async def wait_for_codex(pr_number: int, checks_done: asyncio.Event) -> None:
-    print("Waiting for review feedback...", flush=True)
+    print("レビュー フィードバック を待機中...", flush=True)
     while True:
         (
             issue_comments,
@@ -536,7 +536,7 @@ async def wait_for_codex(pr_number: int, checks_done: asyncio.Event) -> None:
             )
             body = sanitize_terminal_output(latest.get("body") or "").strip()
             if body:
-                print("Codex left comments. Address feedback before merge.")
+                print("Codex が コメント を残しました。マージ 前に フィードバック へ対応してください。")
                 print(body)
                 raise SystemExit(2)
         if checks_done.is_set():
@@ -545,7 +545,7 @@ async def wait_for_codex(pr_number: int, checks_done: asyncio.Event) -> None:
 
 
 async def wait_for_checks(head_sha: str, checks_done: asyncio.Event) -> None:
-    print("Waiting for CI checks...", flush=True)
+    print("CI チェック を待機中...", flush=True)
     empty_seconds = 0
     while True:
         check_runs = await get_check_runs(head_sha)
@@ -553,7 +553,7 @@ async def wait_for_checks(head_sha: str, checks_done: asyncio.Event) -> None:
             empty_seconds += POLL_SECONDS
             if empty_seconds >= CHECKS_APPEAR_TIMEOUT_SECONDS:
                 print(
-                    "No checks detected after 120s; check CI configuration",
+                    "120 秒経っても チェック が検出されません。CI 設定を確認してください",
                 )
                 raise SystemExit(3)
             await asyncio.sleep(POLL_SECONDS)
@@ -561,12 +561,12 @@ async def wait_for_checks(head_sha: str, checks_done: asyncio.Event) -> None:
         empty_seconds = 0
         pending, failed, failures = summarize_checks(check_runs)
         if failed:
-            print("Checks failed:")
+            print("チェック が失敗しました:")
             for failure in failures:
                 print(f"- {failure}")
             raise SystemExit(3)
         if not pending:
-            print("Checks passed")
+            print("チェック が通過しました")
             checks_done.set()
             return
         await asyncio.sleep(POLL_SECONDS)
@@ -576,8 +576,8 @@ async def watch_pr() -> None:
     pr = await get_pr_info()
     if is_merge_conflicting(pr):
         print(
-            "PR has merge conflicts. Resolve/rebase against main and push before "
-            "running land_watch again.",
+            "PR に マージ コンフリクト があります。main に対して解消または rebase し、"
+            "push してから land_watch を再実行してください。",
         )
         raise SystemExit(5)
     head_sha = pr.head_sha
@@ -590,12 +590,12 @@ async def watch_pr() -> None:
             current = await get_pr_info()
             if is_merge_conflicting(current):
                 print(
-                    "PR has merge conflicts. Resolve/rebase against main and push "
-                    "before running land_watch again.",
+                    "PR に マージ コンフリクト があります。main に対して解消または rebase し、"
+                    "push してから land_watch を再実行してください。",
                 )
                 raise SystemExit(5)
             if current.head_sha != head_sha:
-                print("PR head updated; pull/amend/force-push to retrigger CI")
+                print("PR head が更新されました。pull / amend / force-push で CI を再 トリガー してください")
                 raise SystemExit(4)
             await asyncio.sleep(POLL_SECONDS)
 
