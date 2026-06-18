@@ -1,6 +1,6 @@
 # pr-completion-guard
 
-Stop hook が「PR が merge されるまでセッションを終わらせない」状態を作る plugin。「PR Draft → CI green → Ready → merge」までセッションを継続させ、人手介入を例外時のみに減らす。
+Stop hook が「PR が Ready 状態に到達するまでセッションを終わらせない」状態を作る plugin。「コミット → PR Draft → CI green → Ready」までセッションを継続させ、人手の介入対象を merge 判断のみに絞る。merge そのものは plugin の責務外で、人手ゲートとして残す。
 
 ## 動作
 
@@ -13,7 +13,6 @@ Stop イベント発火時に次の順で状態判定する。未完了の作業
 | `ci-fail` | `statusCheckRollup` に FAILURE 等 | `gh pr checks` で失敗内容を確認し修正 |
 | `ci-pending` | `statusCheckRollup` に PENDING 等 | `gh pr checks --watch` で完了待ち |
 | `mergeable-draft` | `mergeable=MERGEABLE` かつ `isDraft=true` | `gh pr ready` で ready 化 |
-| `mergeable` | `mergeable=MERGEABLE` かつ Ready | `gh pr merge --squash --delete-branch` で merge |
 | `conflict` | `mergeable=CONFLICTING` | `origin/main` を rebase して解消 |
 | `mergeable-unknown` | `mergeable=UNKNOWN` | 再評価を待つ |
 
@@ -21,6 +20,7 @@ Stop イベント発火時に次の順で状態判定する。未完了の作業
 
 - 現在ブランチが `main` / `master` / `HEAD` / 空文字列
 - PR が CLOSED または MERGED 状態
+- PR が `mergeable=MERGEABLE` かつ Ready (=人手 merge ゲートへ引き渡す)
 - `git rev-parse --git-dir` が失敗 (git repo の外)
 - `gh` が無いか 5 秒以内に応答しない
 

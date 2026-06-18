@@ -126,10 +126,9 @@ fi
 case "$mergeable" in
   MERGEABLE)
     if [ "$is_draft" = "true" ]; then
-      emit_block "mergeable-draft#${pr_number}" "PR #${pr_number} は CI green ですが draft のままです。\`gh pr ready ${pr_number}\` で ready 化してから merge してください。"
-    else
-      emit_block "mergeable#${pr_number}" "PR #${pr_number} は merge 可能です。\`gh pr merge ${pr_number} --squash --delete-branch\` で merge してください。"
+      emit_block "mergeable-draft#${pr_number}" "PR #${pr_number} は CI green ですが draft のままです。\`gh pr ready ${pr_number}\` で ready 化してください。merge は人手側のゲートで実行されます。"
     fi
+    # Ready かつ mergeable は人手 review/merge へ引き渡す。素通し。
     ;;
   CONFLICTING)
     emit_block "conflict#${pr_number}" "PR #${pr_number} に conflict があります。origin/main を rebase して解消してください。"

@@ -180,9 +180,9 @@ run_case "ci-pending blocks" feature "$ci_pending" "CI 待ち"
 mergeable_draft='[{"number":42,"state":"OPEN","isDraft":true,"mergeable":"MERGEABLE","statusCheckRollup":[{"conclusion":"SUCCESS","name":"test"}]}]'
 run_case "mergeable draft blocks" feature "$mergeable_draft" "ready 化"
 
-# 9. mergeable + Ready で merge 要求
+# 9. mergeable + Ready は人手 merge ゲートへ引き渡すため素通し
 mergeable_ready='[{"number":42,"state":"OPEN","isDraft":false,"mergeable":"MERGEABLE","statusCheckRollup":[{"conclusion":"SUCCESS","name":"test"}]}]'
-run_case "mergeable ready blocks" feature "$mergeable_ready" "merge 可能"
+run_case "mergeable ready passes through" feature "$mergeable_ready" ""
 
 # 10. conflict で block
 conflict='[{"number":42,"state":"OPEN","isDraft":false,"mergeable":"CONFLICTING","statusCheckRollup":[{"conclusion":"SUCCESS","name":"test"}]}]'
