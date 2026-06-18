@@ -30,24 +30,19 @@ Stop イベント発火時に次の順で状態判定する。未完了の作業
 
 ## Installation
 
-`~/.claude/settings.json` に次を追加する。
+各 repo の project スコープ (`.claude/settings.json`) で有効化する。Stop hook が PR 操作を扱うため、PR を持つ repo にのみ enable する。ユーザー スコープ (`~/.claude/settings.json`) で一律に有効化すると、PR を作らない探索的セッションでも hook が走るので避ける。
+
+`<repo>/.claude/settings.json` に次を追加する。
 
 ```json
 {
   "enabledPlugins": {
     "pr-completion-guard@claude-code": true
-  },
-  "extraKnownMarketplaces": {
-    "claude-code": {
-      "source": {
-        "source": "github",
-        "repo": "MH4GF/claude-code"
-      },
-      "autoUpdate": true
-    }
   }
 }
 ```
+
+marketplace 登録 (`extraKnownMarketplaces.claude-code`) はユーザー スコープ (`~/.claude/settings.json`) 側に置く。各 repo の project スコープ では `enabledPlugins` のみ宣言する。
 
 ## 環境変数
 
