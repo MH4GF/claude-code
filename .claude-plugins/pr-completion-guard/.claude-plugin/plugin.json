@@ -1,0 +1,6 @@
+{
+  "name": "pr-completion-guard",
+  "description": "Stop hook that pushes back the agent when uncommitted changes, missing PR, failing/pending CI, draft, mergeable, or conflict state is detected",
+  "version": "0.1.0",
+  "author": { "name": "MH4GF" }
+}

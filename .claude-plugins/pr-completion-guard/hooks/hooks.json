@@ -1,0 +1,15 @@
+{
+  "description": "Block session stop until the current branch's PR is merged (or no PR work remains)",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/check-pr-state.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -8,6 +8,13 @@
       "description": "Steering loop for Claude Code harness: log tool-use events, aggregate invocations, and AI-driven analysis",
       "version": "0.1.0",
       "author": { "name": "MH4GF" }
+    },
+    {
+      "name": "pr-completion-guard",
+      "source": "./.claude-plugins/pr-completion-guard",
+      "description": "Stop hook that pushes back the agent when uncommitted changes, missing PR, failing/pending CI, draft, mergeable, or conflict state is detected",
+      "version": "0.1.0",
+      "author": { "name": "MH4GF" }
     }
   ]
 }

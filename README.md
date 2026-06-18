@@ -7,6 +7,7 @@ MH4GF's Claude Code configuration and plugin marketplace.
 ## Plugins
 
 - `.claude-plugins/tool-use-steering/` — Claude Code harness 向けの steering loop。invocation を集計し AI 分析で `settings.json` / `CLAUDE.md` / hook / script を継続改善する
+- `.claude-plugins/pr-completion-guard/` — Stop hook で「PR Draft → CI green → Ready → merge」までセッションを継続させる。Symphony bg session の人手介入を例外時のみに減らす
 
 ## ユーザー設定 (`user-scope/`)
 
