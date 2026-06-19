@@ -61,6 +61,7 @@
 
 - `.claude/tmp/` を使う — 一時文書を `/tmp/` に書かない。常に作業ディレクトリの `.claude/tmp/` を使う。draft や中間出力はセッション間で再利用できる。対して `/tmp/` は ephemeral で探索しにくい
 - `mkdir -p` + `cat > heredoc` より `Write` を優先 — `Write` は親ディレクトリを自動作成し、Bash mkdir の sandbox block を避ける。`.claude/tmp/` 配下の新規ファイルは `Write` で作る。heredoc は別コマンドへ pipe する小さな実行スニペットに限る
+- `.claude/tmp/` 配下は git に含められない — `~/.config/git/ignore` と repo の `.gitignore` 両方で `.claude/tmp/` を除外している。そのため `git add .claude/tmp/<file>` を実行しても何も stage されない。コミットしたい draft は ignore されない追跡対象パスへ書く。PR や issue body 受け渡しだけなら `gh pr create --body-file .claude/tmp/<file>` で gh へ直接渡せる。gh はファイルを読むだけで gitignore とは無関係
 
 # External Service Writes
 
