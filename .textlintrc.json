@@ -12,6 +12,19 @@
       }
     },
     "@textlint-ja/preset-ai-writing": true,
+    "preset-ja-spacing": {
+      "ja-no-space-between-full-width": true,
+      "ja-space-between-half-and-full-width": true,
+      "ja-nakaguro-or-halfwidth-space-between-katakana": false,
+      "ja-no-space-around-parentheses": false,
+      "ja-no-space-around-slash": false,
+      "ja-space-after-exclamation": false,
+      "ja-space-after-question": false,
+      "ja-space-around-code": false,
+      "ja-space-around-emphasis": false,
+      "ja-space-around-link": false,
+      "ja-space-around-strong": false
+    },
     "no-mid-sentence-break": true,
     "prh": {
       "rulePaths": ["./prh.yml"]
