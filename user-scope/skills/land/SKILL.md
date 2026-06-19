@@ -165,4 +165,4 @@ exit code の意味
 
 - 起動条件 — Linear status が `Merging` であること (`mcp__linear-mh4gf__get_issue` の `state.name` で確認)
 - マージ 完了後 — GitHub webhook 経由で Linear gitAutomationStates の `merge` event が発火し `Done` へ自動遷移する。10 秒待っても遷移しない時のみ `mcp__linear-mh4gf__save_issue` で手動遷移する (state ID は `mcp__linear-mh4gf__list_issue_statuses` 経由)
-- `Merging` 以外の状態の時は本 スキル を起動しない。直接 `gh pr merge` を叩かない
+- `Merging` 以外の状態の時は本 スキル を起動しない。`gh pr merge` の実行は本 SKILL.md 手順 9 (`gh pr merge --squash` ブロック) でのみ行い、skill 外から直接呼ばない
