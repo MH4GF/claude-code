@@ -215,6 +215,8 @@ PR が attach された チケット は、本 protocol を完走させてから
 5. feedback 反映の変更後は validation を再実行し、push する
 6. actionable comment が残らなくなるまで本 sweep を繰り返す
 
+inline review comment への返信を POST する時、`gh api -f body='...'` は使わない。body 中の backtick (`` ` ``) や `$` が zsh の コマンド置換 / 変数展開として解釈され、囲まれた部分が黙って消える。draft を `.claude/tmp/` 配下の file に書き、`jq -n --rawfile body <path> ... | gh api ... --input -` で stdin から渡す。詳細は `land` skill SKILL.md の レビュー対応 節を参照する。同じ問題は `gh issue comment` や top-level `gh pr comment` でも起きるので、それぞれ `--body-file <path>` を使う
+
 ## 阻害 時の escape hatch (必須挙動)
 
 完了を阻害する必須 ツール や 認証 / permissions の不足が session 内で解消できない時のみ本 hatch を使う。

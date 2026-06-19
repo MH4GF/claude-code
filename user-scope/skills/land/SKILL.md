@@ -119,11 +119,21 @@ exit code の意味
     ```bash
     gh api repos/{owner}/{repo}/issues/<pr_number>/comments
     ```
-  - 特定の レビュー コメント へ返信する
+  - 特定の レビュー コメント へ返信する。body は draft file 経由で `jq --rawfile` + `--input -` で渡す
     ```bash
-    gh api -X POST /repos/{owner}/{repo}/pulls/<pr_number>/comments \
-      -f body='[codex] <response>' -F in_reply_to=<comment_id>
+    # body を draft file へ書く (Write ツール または heredoc)
+    body_path=.claude/tmp/review-reply-<comment_id>.md
+
+    # JSON ペイロード を組み立てて gh api へ stdin で渡す
+    jq -n \
+      --rawfile body "$body_path" \
+      --argjson reply_to <comment_id> \
+      '{body: $body, in_reply_to: $reply_to}' \
+    | gh api -X POST /repos/{owner}/{repo}/pulls/<pr_number>/comments --input -
     ```
+- `gh api -f body='...'` / `gh api -F body=@file` は使わない。zsh が body 中の backtick (`` ` ``) や `$` を コマンド置換 / 変数展開として解釈し、囲まれた部分が黙って消える
+- レビュー 返信は コード断片や `$variable` を含むことが多い。`--rawfile` + `--input -` を必ず経由させる
+- 同じ問題は `gh issue comment` や top-level `gh pr comment` にもある。これらは `--body-file <path>` を使う
 - `in_reply_to` は レビュー コメント の数値 ID (例 `2710521800`) を渡す。GraphQL の node ID (例 `PRRC_...`) は通らない。エンドポイント には PR 番号 (`/pulls/<pr_number>/comments`) を含める
 - GraphQL の レビュー 返信 mutation が forbidden になったら REST へ切り替える
 - 返信で 404 が出たら、エンドポイント が間違っている (PR 番号抜け) か スコープ 不足のいずれか。先に一覧を取って確認する
