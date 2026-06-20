@@ -18,7 +18,7 @@ case "$file_path" in
 esac
 
 case "$file_path" in
-  */node_modules/*|*/.git/*) exit 0 ;;
+  */node_modules/*|*/.git/*|*/.claude/tmp/*) exit 0 ;;
 esac
 
 if [ -r "$file_path" ]; then
