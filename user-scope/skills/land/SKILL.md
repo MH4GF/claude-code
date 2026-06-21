@@ -29,12 +29,12 @@ description: PR のコンフリクト監視・レビュー応答・CI 復旧・s
 7. 全チェックが完了するまでウォッチする
 8. チェックが失敗したらログを取って原因を直し、`commit` スキルでコミット、`push` スキルで push、再度チェックを回す
 9. 全チェックが green かつレビューフィードバックが解消したら squash マージし、PR タイトル / 本文をそのままマージコミットの subject / body へ流す
-10. コンテキスト確認—レビューフィードバックを実装する前に、ユーザーの意図やタスク文脈と矛盾しないか確認する。矛盾していたらインラインで根拠を返し、ユーザーに確認してからコードを変える
-11. 反対応答テンプレ—反対する時はインラインで「受領 + 根拠 + 代案」の順に返す
-12. 曖昧時ゲート—曖昧で進めない時は確認フローを回す (PR を現在の GitHub ユーザーへアサインしメンションして返答を待つ)。曖昧さが解けるまで実装しない
+10. コンテキスト確認 — レビューフィードバックを実装する前に、ユーザーの意図やタスク文脈と矛盾しないか確認する。矛盾していたらインラインで根拠を返し、ユーザーに確認してからコードを変える
+11. 反対応答テンプレ — 反対する時はインラインで「受領 + 根拠 + 代案」の順に返す
+12. 曖昧時ゲート — 曖昧で進めない時は確認フローを回す (PR を現在の GitHub ユーザーへアサインしメンションして返答を待つ)。曖昧さが解けるまで実装しない
     - レビュアーより自分が正しいと確信できる時はユーザー確認なしで進めてよい。その場合もインラインで根拠を返す
-13. コメント単位モード—各レビューコメントを受諾 / 確認 / 反対のいずれかへ分類する。インライン (Codex レビューは issue スレッド) で意図を述べてからコードを変える
-14. 変更前に返信—必ず意図を返してからコードを push する。インラインレビューコメントはインライン、Codex レビューは issue スレッド
+13. コメント単位モード — 各レビューコメントを受諾 / 確認 / 反対のいずれかへ分類する。インライン (Codex レビューは issue スレッド) で意図を述べてからコードを変える
+14. 変更前に返信 — 必ず意図を返してからコードを push する。インラインレビューコメントはインライン、Codex レビューは issue スレッド
 
 ## コマンド
 
@@ -79,7 +79,7 @@ gh pr merge --squash --subject "$pr_title" --body "$pr_body"
 
 ## 非同期ウォッチ補助
 
-優先案— asyncio ベースのウォッチャーでレビューコメント / CI / head 更新を並列に監視する。
+優先案 — asyncio ベースのウォッチャーでレビューコメント / CI / head 更新を並列に監視する。
 
 ```bash
 python3 ~/.claude/skills/land/land_watch.py
@@ -87,10 +87,10 @@ python3 ~/.claude/skills/land/land_watch.py
 
 exit code の意味
 
-- `2` —レビューコメントを検知した (フィードバック対応へ)
+- `2` — レビューコメントを検知した (フィードバック対応へ)
 - `3` — CI チェックが失敗した
 - `4` — PR head が更新された (自動修正コミットを検知)
-- `5` —マージコンフリクトを検知した (`pull` スキルで解消)
+- `5` — マージコンフリクトを検知した (`pull` スキルで解消)
 
 ## 失敗対応
 
@@ -119,11 +119,21 @@ exit code の意味
     ```bash
     gh api repos/{owner}/{repo}/issues/<pr_number>/comments
     ```
-  - 特定のレビューコメントへ返信する
+  - 特定のレビューコメントへ返信する。body は draft file 経由で `jq --rawfile` + `--input -` で渡す
     ```bash
-    gh api -X POST /repos/{owner}/{repo}/pulls/<pr_number>/comments \
-      -f body='[codex] <response>' -F in_reply_to=<comment_id>
+    # body を draft file へ書く (Write ツールまたは heredoc)
+    body_path=.claude/tmp/review-reply-<comment_id>.md
+
+    # JSON ペイロードを組み立てて gh api へ stdin で渡す
+    jq -n \
+      --rawfile body "$body_path" \
+      --argjson reply_to <comment_id> \
+      '{body: $body, in_reply_to: $reply_to}' \
+    | gh api -X POST /repos/{owner}/{repo}/pulls/<pr_number>/comments --input -
     ```
+- `gh api -f body='...'` / `gh api -F body=@file` は使わない。zsh が body 中の backtick (`` ` ``) や `$` をコマンド置換 / 変数展開として解釈し、囲まれた部分が黙って消える
+- レビュー返信はコード断片や `$variable` を含むことが多い。`--rawfile` + `--input -` を必ず経由させる
+- 同じ問題は `gh issue comment` や top-level `gh pr comment` にもある。これらは `--body-file <path>` を使う
 - `in_reply_to` はレビューコメントの数値 ID (例 `2710521800`) を渡す。GraphQL の node ID (例 `PRRC_...`) は通らない。エンドポイントには PR 番号 (`/pulls/<pr_number>/comments`) を含める
 - GraphQL のレビュー返信 mutation が forbidden になったら REST へ切り替える
 - 返信で 404 が出たら、エンドポイントが間違っている (PR 番号抜け) かスコープ不足のいずれか。先に一覧を取って確認する
@@ -163,6 +173,6 @@ exit code の意味
 
 本スキルは GitHub 側の land 作業を扱う。Linear status との関係は次のとおり
 
-- 起動条件— Linear status が `Merging` であること (`mcp__linear-mh4gf__get_issue` の `state.name` で確認)
-- マージ完了後— GitHub webhook 経由で Linear gitAutomationStates の `merge` event が発火し `Done` へ自動遷移する。10 秒待っても遷移しない時のみ `mcp__linear-mh4gf__save_issue` で手動遷移する (state ID は `mcp__linear-mh4gf__list_issue_statuses` 経由)
+- 起動条件 — Linear status が `Merging` であること (`mcp__linear-mh4gf__get_issue` の `state.name` で確認)
+- マージ完了後 — GitHub webhook 経由で Linear gitAutomationStates の `merge` event が発火し `Done` へ自動遷移する。10 秒待っても遷移しない時のみ `mcp__linear-mh4gf__save_issue` で手動遷移する (state ID は `mcp__linear-mh4gf__list_issue_statuses` 経由)
 - `Merging` 以外の状態の時は本スキルを起動しない。`gh pr merge` の実行は本 SKILL.md 手順 9 (`gh pr merge --squash` ブロック) でのみ行い、skill 外から直接呼ばない
