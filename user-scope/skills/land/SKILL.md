@@ -1,6 +1,6 @@
 ---
 name: land
-description: PR のコンフリクト監視・レビュー応答・CI 復旧・squash マージまでを一括で面倒見るスキル。「land して」「PR をマージ」「Merging を流して」等で発動する。マージ完了までユーザーへ制御を返さずウォッチャーループを回し続ける
+description: PR のコンフリクト監視・レビュー応答・CI 復旧・マージまでを一括で面倒見るスキル。「land して」「PR をマージ」「Merging を流して」等で発動する。マージ完了までユーザーへ制御を返さずウォッチャーループを回し続ける
 ---
 
 # land
@@ -9,7 +9,7 @@ description: PR のコンフリクト監視・レビュー応答・CI 復旧・s
 
 - PR が main とコンフリクト無しでマージできる状態を保証する
 - CI を green に保ち、失敗時は原因を直す
-- 全チェックが green になり次第 squash マージする
+- 全チェックが green になり次第マージする
 - マージ完了までユーザーへ制御を返さない。ブロックされない限りウォッチャーループを回し続ける
 - マージ後のリモートブランチ削除は不要 (リポジトリ側で head ブランチ自動削除を有効にしている前提)
 
@@ -28,7 +28,7 @@ description: PR のコンフリクト監視・レビュー応答・CI 復旧・s
 6. Codex のレビューコメント (あれば) を確認し、必要な修正をマージ前に処理する
 7. 全チェックが完了するまでウォッチする
 8. チェックが失敗したらログを取って原因を直し、`commit` スキルでコミット、`push` スキルで push、再度チェックを回す
-9. 全チェックが green かつレビューフィードバックが解消したら squash マージし、PR タイトル / 本文をそのままマージコミットの subject / body へ流す
+9. 全チェックが green かつレビューフィードバックが解消したらマージする (リポジトリ許可 merge method を判定する snippet はコマンド節)
 10. コンテキスト確認 — レビューフィードバックを実装する前に、ユーザーの意図やタスク文脈と矛盾しないか確認する。矛盾していたらインラインで根拠を返し、ユーザーに確認してからコードを変える
 11. 反対応答テンプレ — 反対する時はインラインで「受領 + 根拠 + 代案」の順に返す
 12. 曖昧時ゲート — 曖昧で進めない時は確認フローを回す (PR を現在の GitHub ユーザーへアサインしメンションして返答を待つ)。曖昧さが解けるまで実装しない
@@ -44,6 +44,15 @@ branch=$(git branch --show-current)
 pr_number=$(gh pr view --json number -q .number)
 pr_title=$(gh pr view --json title -q .title)
 pr_body=$(gh pr view --json body -q .body)
+
+# 許可 merge method を判定 (優先順位 squash → マージコミット → rebase)
+read -r allow_squash allow_merge allow_rebase <<<"$(gh api repos/{owner}/{repo} \
+  --jq '[.allow_squash_merge, .allow_merge_commit, .allow_rebase_merge] | @tsv')"
+if   [ "$allow_squash" = "true" ]; then merge_flag="--squash"
+elif [ "$allow_merge"  = "true" ]; then merge_flag="--merge"
+elif [ "$allow_rebase" = "true" ]; then merge_flag="--rebase"
+else echo "no merge method allowed in this repo" >&2; exit 1
+fi
 
 # マージ可否とコンフリクトを確認
 mergeable=$(gh pr view --json mergeable -q .mergeable)
@@ -73,8 +82,12 @@ if ! gh pr checks --watch; then
   exit 1
 fi
 
-# squash マージ (本リポジトリは head ブランチ自動削除を有効化済み)
-gh pr merge --squash --subject "$pr_title" --body "$pr_body"
+# 判定した method でマージ (squash の時のみ subject/body を渡す)
+if [ "$merge_flag" = "--squash" ]; then
+  gh pr merge --squash --subject "$pr_title" --body "$pr_body"
+else
+  gh pr merge "$merge_flag"
+fi
 ```
 
 ## 非同期ウォッチ補助
