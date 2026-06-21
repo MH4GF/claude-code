@@ -16,6 +16,21 @@ MH4GF's Claude Code configuration and plugin marketplace.
 ./setup.sh
 ```
 
+### per-user overlay
+
+公式 Claude Code は user-level の `settings.local.json` を持たない。`permissions.ask` のような環境別に効かせたい設定を user-スコープだけで分岐させるため、`setup.sh` で per-user overlay を merge する仕組みを持つ。
+
+`setup.sh` は `$(id -un)` から実行ユーザー を判定する。`user-scope/settings.<user>.overlay.json` があれば base 設定と deep merge する。merge 結果は `~/.claude/settings.json` へ materialized file として書き出す。merge は `jq -s '.[0] * .[1]'` を使う。overlay が無ければ従来通り symlink する。
+
+現在の overlay 一覧は次のとおり。
+
+- `user-scope/settings.mh4gf.overlay.json` — MacBook interactive 用。`permissions.ask` に `gh pr create` / Linear write / Notion write 等の承認 prompt 対象を入れる
+- hermes (Mac mini bg session) は overlay 無し。base の `ask: []` がそのまま使われ、`bypassPermissions` mode の bg session を停滞させない
+
+別ユーザー で利用する場合は `user-scope/settings.<user>.overlay.json` を新規追加して `./setup.sh` を再実行する。
+
+overlay 経路では symlink を貼らず materialized file になる。`user-scope/settings.json` を編集した後は `./setup.sh` を再実行して反映する。
+
 ## unslop AI 文章 lint を有効化する
 
 `user-scope/hooks/unslop-guard.sh` は PostToolUse hook。Write/Edit/MultiEdit 後の Markdown を unslop で検査し、違反があれば exit 2 を返す。
