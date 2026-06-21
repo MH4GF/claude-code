@@ -73,6 +73,15 @@
   - skill が起動されなかった場合のバックストップとして `cc-human-review <file>` を 1 回実行する
   - tmux split で nvim が開く。以降の `Edit` は autoread で反映されるので再実行はしない
 
+# Skill 編集
+
+SKILL.md / CLAUDE.md / カスタムコマンドへの増分編集で、本文の散文を肥大化させない指針は以下
+
+- 判定 / 分岐ロジックはコマンド節 (実行可能 snippet) に集約する — 散文で「こう判定する」「失敗時はこうなる」を別途解説しない
+- description / 目的 / 手順は最小置換に留める — `squash マージ` を `マージ` に差し替える形で済ませ、新規節を増やさない
+- 手順への補足は 1 行に圧縮する — サブステップを増やさず `(snippet はコマンド節)` 形式で本文から参照する
+- 差分の経緯解説は `commit` message と PR description に書く — skill 本文には書かない
+
 # Plan Mode
 
 Plan には次の項目が必要
