@@ -44,6 +44,14 @@ binary path は `~/ghq/github.com/MH4GF/unslop/target/release/unslop` を hardco
 }
 ```
 
+### CI は touched line のみ lint する
+
+`.github/workflows/ci.yml` の `unslop` job は、PR が触った行に存在する違反のみを report する。`scripts/unslop-changed-lines.py` が `git diff --unified=0 BASE...HEAD` から added/modified 行範囲を抽出する。続けて unslop の出力を line range で filter する。
+
+これにより unslop バージョン更新や rule 追加で main 由来の既存違反が strict 検出された場合でも、touched でない行の違反は CI を block しない。PR の責務は「自分が変更した行を新規違反なく保つ」ことに限定される。
+
+bundle 出力 (同一 rule の複数 coords を 1 行にまとめる unslop の仕様) も、in-range の coords のみを残して pruning する。新規追加されたファイルは全行を in-range として扱う。
+
 ## Development
 
 ### Run Tests

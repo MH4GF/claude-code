@@ -9,6 +9,97 @@ concurrency:
 
 jobs:
   unslop:
-    uses: MH4GF/shared-config/.github/workflows/_unslop.yml@5c5599edf2b382eba5c4b1d499a808f273f37af4 # 5c5599e
-    with:
-      config: .textlintrc.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Resolve unslop release tag
+        id: unslop-rel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag=$(gh release view --repo MH4GF/unslop --json tagName --jq .tagName)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Cache unslop binary
+        id: cache-unslop
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.local/bin/unslop
+          key: unslop-${{ runner.os }}-${{ steps.unslop-rel.outputs.tag }}
+
+      - name: Download unslop binary
+        if: steps.cache-unslop.outputs.cache-hit != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UNSLOP_TAG: ${{ steps.unslop-rel.outputs.tag }}
+        run: |
+          set -euo pipefail
+          archive=unslop-x86_64-unknown-linux-gnu.tar.gz
+          tmpdir=$(mktemp -d)
+          gh release download "$UNSLOP_TAG" \
+            --repo MH4GF/unslop \
+            --pattern "$archive" \
+            --pattern "${archive}.sha256" \
+            --dir "$tmpdir"
+          (cd "$tmpdir" && shasum -a 256 -c "${archive}.sha256")
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf "$tmpdir/$archive" -C "$HOME/.local/bin" unslop
+          chmod +x "$HOME/.local/bin/unslop"
+
+      - name: Add unslop to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Collect changed Markdown files
+        id: changed
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          files=$(git -c core.quotePath=false diff --name-only --diff-filter=ACMR "$BASE_SHA"...HEAD -- '*.md' '*.mdx' || true)
+          if [ -z "$files" ]; then
+            echo "No changed Markdown files."
+            echo "files=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          ja_files=""
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            [ -r "$file" ] || continue
+            if perl -CSD -0777 -ne 'exit(/\p{Hiragana}|\p{Katakana}|\p{Han}/ ? 0 : 1)' "$file" 2>/dev/null; then
+              ja_files="${ja_files}${file}"$'\n'
+            fi
+          done <<< "$files"
+          if [ -z "$ja_files" ]; then
+            echo "No Japanese Markdown files changed."
+            echo "files=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          {
+            echo "files<<__EOF__"
+            printf '%s' "$ja_files"
+            echo "__EOF__"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run unslop on changed lines only
+        if: steps.changed.outputs.files != ''
+        env:
+          FILES: ${{ steps.changed.outputs.files }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -uo pipefail
+          mapfile -t file_args < <(printf '%s' "$FILES" | awk 'NF > 0')
+          if [ "${#file_args[@]}" -eq 0 ]; then
+            echo "No files to lint after filtering."
+            exit 0
+          fi
+          python3 scripts/unslop-changed-lines.py \
+            --base "$BASE_SHA" \
+            --head HEAD \
+            --unslop unslop \
+            --config .textlintrc.json \
+            "${file_args[@]}"
