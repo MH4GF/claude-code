@@ -39,12 +39,21 @@ if [ ! -f "$CONFIG" ]; then
 fi
 
 cd "$REPO" || { echo "[unslop-guard] cd $REPO に失敗" >&2; exit 2; }
-out=$("$UNSLOP" -c "$CONFIG" --no-color "$file_path" 2>&1)
+
+# UNSLOP_GUARD_FIX=off で fix を抑止し、lint-only に戻せる。
+fix_flag="--fix"
+[ "${UNSLOP_GUARD_FIX:-}" = "off" ] && fix_flag=""
+
+out=$("$UNSLOP" -c "$CONFIG" --no-color $fix_flag "$file_path" 2>&1)
 rc=$?
 if [ "$rc" -ne 0 ]; then
   printf '%s\n' "$out" >&2
   echo "" >&2
   echo "[unslop-guard] AI 文章 lint で指摘あり。上記を踏まえて編集を見直してください" >&2
   exit 2
+fi
+# rc=0 でも fix 適用時は "[unslop] fixed N issue(s) ..." が `out` に残るので agent に通知する。
+if [ -n "$out" ]; then
+  printf '%s\n' "$out" >&2
 fi
 exit 0
