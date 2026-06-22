@@ -524,6 +524,7 @@
       "Bash(git reset --soft:*)",
       "Bash(cc-human-review:*)",
       "Bash(~/.claude/hooks/unslop-guard.sh:*)",
+      "Bash(~/.claude/hooks/skill-prose-guard.sh:*)",
       "Bash(pbcopy)",
       "Bash(pbpaste)",
       "Bash(gh pr checkout:*)",
@@ -671,6 +672,10 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/comment-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/skill-prose-guard.sh"
           }
         ]
       }
