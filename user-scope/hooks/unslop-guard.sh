@@ -2,8 +2,8 @@
 set -u
 export PATH="$PATH:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 
-REPO="${UNSLOP_GUARD_REPO:-/Users/mh4gf/ghq/github.com/MH4GF/claude-code}"
-UNSLOP="${UNSLOP_BIN:-/Users/mh4gf/ghq/github.com/MH4GF/unslop/target/release/unslop}"
+REPO="${UNSLOP_GUARD_REPO:-$HOME/ghq/github.com/MH4GF/claude-code}"
+UNSLOP="${UNSLOP_BIN:-$HOME/ghq/github.com/MH4GF/unslop/target/release/unslop}"
 CONFIG="$REPO/.textlintrc.json"
 
 [ "${UNSLOP_GUARD:-}" = "off" ] && exit 0
