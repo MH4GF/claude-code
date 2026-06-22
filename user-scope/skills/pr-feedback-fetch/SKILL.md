@@ -31,7 +31,7 @@ description: 指定 PR の 3 channel feedback (top-level / inline review / revie
 
 - 引数なし — 現 branch をそのまま対象に `gh pr view --json number,url,headRefName,baseRepository` で PR 番号を解決する
 - 数字 (例 `200`) — PR 番号として扱う。repo は `gh repo view --json nameWithOwner` で現 repo を採用する
-- URL (例 `https://github.com/MH4GF/works/pull/200`) — URL から `<owner>/<repo>` と PR 番号を分解する
+- URL (例 `https://github.com/MH4GF/claude-code/pull/10`) — URL から `<owner>/<repo>` と PR 番号を分解する
 
 引数を解決できない場合 (現 branch の PR が無い等) は即停止し、「PR 未解決」と書いた出力を返す。
 
