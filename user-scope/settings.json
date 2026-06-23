@@ -687,6 +687,15 @@
             "command": "~/.claude/hooks/unslop-guard.sh"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/skill-md-guard.sh"
+          }
+        ]
       }
     ],
     "PermissionRequest": [

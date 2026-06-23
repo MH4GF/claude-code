@@ -20,6 +20,10 @@ MH4GF's Claude Code configuration and plugin marketplace.
 
 `user-scope/hooks/unslop-guard.sh` は PostToolUse hook。Write/Edit/MultiEdit 後の Markdown を unslop で検査し、違反があれば exit 2 を返す。
 
+並走する `user-scope/hooks/skill-md-guard.sh` は同じ PostToolUse で SKILL.md の frontmatter description を検査する。違反語が見つかれば exit 2 を返す。
+
+検出対象は「呼び出し元」「bg session」「Symphony」「1 turn 内に完結」「人間判断必須」「無人で動かす」等の呼び出し文脈依存表現。skill 記述は呼び出し元へ依存せず、動作だけを述べる self-contained な書き方にする。`SKILL_MD_GUARD=off` で個別オフにできる。
+
 [unslop](https://github.com/MH4GF/unslop) は textlintrc 互換の Rust 製 lint binary。`.textlintrc.json` と `prh.yml` をそのまま読む。
 
 初回セットアップ:
@@ -49,9 +53,10 @@ binary path は `~/ghq/github.com/MH4GF/unslop/target/release/unslop` を hardco
 ### Run Tests
 
 ```bash
-bash tests/test-log-hook.sh      # Logger unit tests (9 cases)
-bash tests/test-aggregate.sh     # Aggregation smoke tests (17 cases)
-bash tests/test-comment-guard.sh # Comment-guard hook tests (30 cases)
+bash tests/test-log-hook.sh        # Logger unit tests (9 cases)
+bash tests/test-aggregate.sh       # Aggregation smoke tests (17 cases)
+bash tests/test-comment-guard.sh   # Comment-guard hook tests (30 cases)
+bash tests/test-skill-md-guard.sh  # SKILL.md frontmatter guard tests (24 cases)
 ```
 
 ## License

@@ -9,10 +9,10 @@
 - 地の文に英単語を混ぜない — 日本語として定着した技術用語はカタカナで書く（動詞・形容詞含む）
   - 一部例: `tx` → トランザクション、`retry` → リトライ、`outer loop` → 外側のループ
   - 用語マッピングの正は `prh.yml` で、unslop が検出して block する
-- 識別子は翻訳しない — コード・SQL・CLI・API・ライブラリ・DBオブジェクト・ファイルパス・ツール名・エラーコード・原文引用を原文のまま残す
+- 識別子は翻訳しない — コード・SQL・CLI・API・ライブラリ・DB オブジェクト・ファイルパス・ツール名・エラーコード・原文引用を原文のまま残す
   - 例: `goose.AddMigrationNoTxContext`、`ACCESS EXCLUSIVE`、`pgerrcode.DeadlockDetected`
   - 例: `gh pr view --json`、`mergeCommit`、`AskUserQuestion`
-- 同一文書内で表記揺れを起こさない — 例えば `worker` / ワーカー、`trigger` / トリガー、`Approve` / 承認 を混在させず、最初に選んだ表記で統一する
+- 同一文書内で表記揺れを起こさない — 例えば `worker` / ワーカー、`trigger` / トリガー、`Approve` / 承認を混在させず、最初に選んだ表記で統一する
 - bold-colon の箇条書きを使わない — `- **用語**: 説明` 形式は禁止。代わりに `- 用語 — 説明` 形式へ変えるか、段落として展開する
 - 文の長さは ~100 字以内に収める — 日本語の文は 80〜100 字を目安に「。」で区切る。読点で繋ぎ続けず、複文は分割する
 - リスト導入文末に「。」を打たない — 「次のとおり」「以下」で終え、その直後に箇条書きを置く。「〜となった。」の直後に箇条書きは続けない
@@ -40,7 +40,7 @@
 
 - 短い出力のコマンドに反射的に pipe を付けない — `2>&1` や `| tail -N` をコマンドに付けると prefix ベースの allow 判定が壊れる。`| head -N` も同様で、余分な許可プロンプトが出る。Bash ツールは stderr を既に取得し、長出力も切詰める。両方とも冗長。例えば `gh api ... | base64 -d` のように出力を実際に変換する時だけ使う
 - ファイルの一部を読むのに `sed -n 'N,Mp'`・`head -N`・`tail -N` を使わない — Read ツールの `offset`/`limit` を使う。行番号付きで返り、permission の摩擦もない。実際にテキストを変換するパイプ処理の時だけ sed を使う
-- 検査コマンドを装飾 echo セパレータで連結しない — `echo "=== X ===" && <cmd>; echo "=== Y ===" && <cmd>` のように複数の検査を1つの Bash 呼び出しへ束ねない。head トークン が `echo` になり `&&`/`;` 複合のため後続コマンドが prefix-match できず毎回 ask に落ちる。各コマンドを個別のツールコールとして発行する。並列実行でき、各々が auto-allow され、出力も読みやすい
+- 検査コマンドを装飾 echo セパレータで連結しない — `echo "=== X ===" && <cmd>; echo "=== Y ===" && <cmd>` のように複数の検査を 1 つの Bash 呼び出しへ束ねない。head トークンが `echo` になり `&&`/`;` 複合のため後続コマンドが prefix-match できず毎回 ask に落ちる。各コマンドを個別のツールコールとして発行する。並列実行でき、各々が auto-allow され、出力も読みやすい
 
 # GitHub CLI
 
@@ -72,6 +72,13 @@
 - `cc-human-review` でプレビュー — 用意したファイルをユーザーに読ませたい時は `cc-human-review` skill を必ず使う。対象は markdown draft・SQL クエリ・コード・設定ファイル等
   - skill が起動されなかった場合のバックストップとして `cc-human-review <file>` を 1 回実行する
   - tmux split で nvim が開く。以降の `Edit` は autoread で反映されるので再実行はしない
+
+# Skill Authoring
+
+- SKILL.md frontmatter description には呼び出し元 / 動作文脈を書かない — 「Symphony bg session から動かす」「本セッションが呼ぶ」「対話で起動」のような呼び出し元への言及を排除する。skill が何をするかだけを述べる。誰から呼ばれても同じ動作になる self-contained 記述にする
+- 同様に「1 turn 内に完結」「人間判断必須」「無人で動かす」のような実行モード前提を frontmatter description へ書かない — 動作の中身が決まれば、turn 数や人間レビューの有無は呼び出し側の運用判断に委ねる
+- 上記は `user-scope/hooks/skill-md-guard.sh` が PostToolUse で機械検出する。検出語: 呼び出し元 / bg session / background session / バックグラウンドセッション / Symphony / 1 turn 内に完結 / 人間判断必須 / 無人で動かす等。違反すると Write/Edit が block される
+- 人間判断ゲートを設けない — skill 本文も同じ方針で、セッション自身が判断して進めて良い。最終ゲートは PR レビューに委ねる
 
 # Plan Mode
 
