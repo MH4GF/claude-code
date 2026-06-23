@@ -34,6 +34,10 @@ rules:
     pattern: /\bcredentials?\b/i
   - expected: フラグ
     pattern: /\bflag(s)?\b/i
+  - expected: レポート
+    pattern: /\breport\b/i
+  - expected: 種類 / 構成 / 派生形
+    pattern: /\bvariant(s|)\b/i
 
   # 動詞
   - expected: スキップ
