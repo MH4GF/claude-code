@@ -27,13 +27,13 @@ rules:
   - expected: スコープ
     pattern: /\bscope\b/i
   - expected: セクション
-    pattern: /§/
+    pattern: /\u00A7/
   - expected: オンボーディング
     pattern: /\bonboarding\b/i
   - expected: 秘匿情報
-    pattern: /\bcredentials?\b/i
+    pattern: /\bcredential[s]{0,1}\b/i
   - expected: フラグ
-    pattern: /\bflag(s)?\b/i
+    pattern: /\bflag[s]{0,1}\b/i
   - expected: レポート
     pattern: /\breport\b/i
   - expected: 種類 / 構成 / 派生形
@@ -50,8 +50,10 @@ rules:
     pattern: /\bcommit\b/i
   - expected: なりすます
     pattern: /\bimpersonate\b/i
-  - expected: 読む / 使う / 利用する / 参照する 等
-    pattern: /消費(?=する|され|させ|し[てた])/
+  - expected: 読む / 使う / 利用する / 参照する等
+    pattern: /消費(する|され|させ|し[てた])/
+  - expected: 除去
+    pattern: /\bevict\b/i
 
   # 形容詞・副詞
   - expected: 一律
