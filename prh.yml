@@ -52,6 +52,8 @@ rules:
     pattern: /\bimpersonate\b/i
   - expected: 読む / 使う / 利用する / 参照する 等
     pattern: /消費(?=する|され|させ|し[てた])/
+  - expected: 除去
+    pattern: /\bevict\b/i
 
   # 形容詞・副詞
   - expected: 一律
