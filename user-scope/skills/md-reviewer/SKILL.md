@@ -1,7 +1,7 @@
 ---
 name: md-reviewer
 context: fork
-description: markdown 編集 PR の差分を観点別にレビューする。「md レビュー」「文量バランス」で発動。Symphony bg session が Human Review へ遷移する直前に必須実行する
+description: マークダウンを編集する PR を出す時に差分を観点別にレビューする。「md レビュー」「文量バランス」で発動
 ---
 
 # マークダウンテキストのレビュー
