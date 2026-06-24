@@ -62,6 +62,8 @@ rules:
     pattern: /\blegitimate\b/i
   - expected: 情報通知のみ
     pattern: /\binformational only\b/i
+  - expected: 冪等
+    pattern: /\bidempotent\b/i
 
   # 比喩・造語
   - expected: デッドロックで中断された側
