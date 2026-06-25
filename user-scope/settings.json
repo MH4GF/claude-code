@@ -718,7 +718,8 @@
     "gh-ops@tq-marketplace": true,
     "tq@tq-marketplace": true,
     "skill-creator@claude-plugins-official": true,
-    "langfuse@langfuse-observability": true
+    "langfuse@langfuse-observability": true,
+    "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-code": {
@@ -743,7 +744,7 @@
   },
   "language": "日本語",
   "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh",
+  "effortLevel": "high",
   "pluginConfigs": {
     "langfuse@langfuse-observability": {
       "options": {
