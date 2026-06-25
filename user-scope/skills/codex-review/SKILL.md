@@ -15,14 +15,14 @@ git status --porcelain
     │
     ├─ 出力あり → codex review --uncommitted
     │
-    └─ 出力なし → codex review --base main
-                  （またはmaster）
+    └─ 出力なし → codex review --base origin/main
+                  （または origin/master）
 ```
 
-ユーザーがコミットSHAを指定 → `codex review --commit <sha>`
+ユーザーがコミット SHA を指定 → `codex review --commit <sha>`
 
 ## カスタムプロンプト
 
 ```bash
-codex review --base main "セキュリティ観点で確認"
+codex review --base origin/main "セキュリティ観点で確認"
 ```
