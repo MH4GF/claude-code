@@ -1,5 +1,5 @@
 ---
-name: narrative-reviewer
+name: narrative-review
 context: fork
 description: マークダウン / script / 設定の差分を「文量バランス」「経緯コメント検出」の 2 観点でレビューする。文量バランスは markdown のみ、経緯コメント検出は `.md` / `.sh` / `.sb` / `.json` を対象。「ナラティブ レビュー」「文量バランス」「経緯コメント残ってない」で発動
 ---
