@@ -8,13 +8,13 @@
     "preset-ja-technical-writing": {
       "ja-no-mixed-period": false,
       "sentence-length": {
-        "max": 130
+        "max": 200
       }
     },
     "@textlint-ja/preset-ai-writing": true,
     "preset-ja-spacing": {
       "ja-no-space-between-full-width": true,
-      "ja-space-between-half-and-full-width": true,
+      "ja-space-between-half-and-full-width": false,
       "ja-nakaguro-or-halfwidth-space-between-katakana": false,
       "ja-no-space-around-parentheses": false,
       "ja-no-space-around-slash": false,
