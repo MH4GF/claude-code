@@ -64,6 +64,8 @@ rules:
     pattern: /\binformational only\b/i
   - expected: 冪等
     pattern: /\bidempotent\b/i
+  - expected: 実行中
+    pattern: /\bin-flight\b/i
 
   # 比喩・造語
   - expected: デッドロックで中断された側
