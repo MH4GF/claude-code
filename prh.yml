@@ -46,6 +46,8 @@ rules:
     pattern: /\borphan\b/i
   - expected: 本番
     pattern: /\bproduction\b/i
+  - expected: スループット
+    pattern: /\bthroughput\b/i
 
   # 動詞
   - expected: スキップ
