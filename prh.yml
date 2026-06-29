@@ -38,6 +38,8 @@ rules:
     pattern: /\breport\b/i
   - expected: 種類 / 構成 / 派生形
     pattern: /\bvariant(s|)\b/i
+  - expected: スループット
+    pattern: /\bthroughput\b/i
 
   # 動詞
   - expected: スキップ
