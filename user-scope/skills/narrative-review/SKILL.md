@@ -1,7 +1,7 @@
 ---
 name: narrative-review
 context: fork
-description: マークダウン / script / 設定の差分を「文量バランス」「経緯コメント検出」の 2 観点でレビューする。文量バランスは markdown のみ、経緯コメント検出は `.md` / `.sh` / `.sb` / `.json` を対象。「ナラティブ レビュー」「文量バランス」「経緯コメント残ってない」で発動
+description: マークダウン / script / 設定の差分を「文量バランス」「self-contained 性」「経緯コメント検出」の 3 観点でレビューする。文量バランスと self-contained 性は markdown のみ、経緯コメント検出は `.md` / `.sh` / `.sb` / `.json` を対象。「ナラティブ レビュー」「文量バランス」「self-contained」「経緯コメント残ってない」で発動
 ---
 
 # ナラティブ レビュー (markdown / script / 設定の差分)
@@ -22,7 +22,7 @@ git diff --name-only origin/main...HEAD -- \
 
 ファイル種別ごとに適用ルールが変わる。次の表のとおり
 
-- `*.md` — 文量バランス (4 観点) と経緯コメント検出 (5 観点目) の両方
+- `*.md` — 文量バランス・self-contained 性・経緯コメント検出をすべて適用
 - `*.sh` / `*.sb` / `*.json` — 経緯コメント検出のみ
 
 ## ルール
@@ -35,6 +35,17 @@ git diff --name-only origin/main...HEAD -- \
 2. description / 目的 / 手順が最小置換で済んでいるか
 3. 手順への補足が 1 行に圧縮されているか
 4. 差分の経緯解説が本文に残っていないか (経緯は `commit` メッセージ / PR description 側にあるべき)
+
+### self-contained 性 (markdown 専用)
+
+対象は `*.md` の frontmatter description と本文。読み手の手元にない文脈へ暗黙依存していたら FAIL する。次の典型 NG パターンを意味で判定する。
+
+1. 呼び出し形態を動作の前提にしている (NG 例: 「bg session で...」「Symphony 経由で...」「本セッションを止めず...」)
+2. ターン数 / `context: fork` など境界条件を前提にしている (NG 例: 「本 skill は 1 turn 内に完結する想定」「fork で起動された前提で...」)
+3. 人間判断の有無で skill 内に分岐を作っている (NG 例: 「人間判断必須」「無人で動かす」「自動 fix 可 / 人間判断必須」の二分)
+4. 文書外への暗黙参照を本文に展開していない (NG 例: 「詳細は X を参照」だけ、「先ほどの議論で...」、「前回の PR で...」)
+
+方針として必要な前提は本文に書き、呼び出し形態 / 境界条件 / 人間判断への依存を外す。skill 自身が呼び出し形態 / 人間レビュー連携を主題にする時 (例: bg session 専用 skill、人間レビュー起動 skill) は正当な前提なので FAIL しない。
 
 ### 経緯コメント検出 (markdown / script / 設定共通)
 
@@ -108,7 +119,7 @@ git diff --name-only origin/main...HEAD -- \
 
 ファイル別に `git diff origin/main...HEAD -- <file>` と `Read <file>` を実行し、上記ルール違反を行番号付きで列挙する。
 
-- markdown は文量バランス 4 観点 + 経緯コメント検出を両方適用する
+- markdown は文量バランス・self-contained 性・経緯コメント検出をすべて適用する
 - `.sh` / `.sb` / `.json` は経緯コメント検出のみ適用する
 - false positive を避けるため、判別に迷う comment は **保留** とし、最終出力では「保留」セクションに別記する。FAIL 扱いにはしない
 
