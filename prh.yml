@@ -38,6 +38,14 @@ rules:
     pattern: /\breport\b/i
   - expected: 種類 / 構成 / 派生形
     pattern: /\bvariant(s|)\b/i
+  - expected: 読み手
+    pattern: /\bconsumer\b/i
+  - expected: アプリケーション
+    pattern: /\bapplication\b/i
+  - expected: 孤立行
+    pattern: /\borphan\b/i
+  - expected: 本番
+    pattern: /\bproduction\b/i
 
   # 動詞
   - expected: スキップ
