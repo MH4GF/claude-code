@@ -45,19 +45,19 @@ MH4GF/claude-code (public な Claude Code 設定・plugin marketplace) の clone
 - issue が active state の間は turn を終わらせない。required permissions/secrets が missing で blocked の場合は除く。
 {% endif %}
 
-## Workflow protocol
+## ワークフロー手順
 
-- session 起動直後に `symphony-workflow` skill を呼ぶ。status routing / workpad 運用 / 実装 / sweep / `Human Review` 遷移 / land まで、進行は全て同 skill の手順に従う
-- `symphony-workflow` skill が利用できない環境では実装に入らない。Linear issue に blocker comment (何が missing か / unblock に必要な人間の action) を 1 件書き、issue を `Human Review` へ動かして shutdown する
-- 下の「本 repo 固有ルール」は skill の共通手順を上書きする
+- セッション起動直後に `symphony-workflow` スキルを呼ぶ。ステータスの振り分け / workpad 運用 / 実装 / レビュースイープ / `Human Review` 遷移 / マージまで、進行は全て同スキルの手順に従う
+- `symphony-workflow` スキルが利用できない環境では実装に入らない。Linear issue にブロッカーコメント (何が不足しているか / 解除に必要な人間の対応) を 1 件書き、issue を `Human Review` へ動かして終了する
+- 下の「本リポジトリ固有ルール」はスキルの共通手順を上書きする
 
-## 本 repo 固有ルール
+## 本リポジトリ固有ルール
 
-- スコープ外改善の別 issue 化の例外: main 由来の既存違反が PR CI を block した場合、別 issue 化せず本 PR 内で inline 一括 fix する
-  - 本 issue の original 受け入れ条件は別途満たす
-  - PR description に「スコープ外一括 fix の理由」を 1 段落書く。テンプレート: `本 PR は main 由来の既存違反が PR CI を block したため、本 issue 本来のスコープ外の一括 fix を含む。original の受け入れ条件は別途満たしている。`
-- Completion bar への追加要件が 1 つある
-  - markdown / script / 設定の編集を含む PR (`*.md` / `*.sh` / `*.sb` / `*.json`) は `narrative-reviewer` skill が PASS している。FAIL なら本 turn 内で対象ファイルを修正して PASS まで再実行する
+- スコープ外改善の別 issue 化の例外: main 由来の既存違反が PR CI を阻んだ場合、別 issue 化せず本 PR 内でインライン一括修正する
+  - 本 issue の本来の受け入れ条件は別途満たす
+  - PR 本文に「スコープ外一括 fix の理由」を 1 段落書く。テンプレート: `本 PR は main 由来の既存違反が PR CI を block したため、本 issue 本来のスコープ外の一括 fix を含む。original の受け入れ条件は別途満たしている。`
+- 完了バーへの追加要件が 1 つある
+  - markdown / スクリプト / 設定の編集を含む PR (`*.md` / `*.sh` / `*.sb` / `*.json`) は `narrative-reviewer` スキルが PASS している。FAIL なら本ターン内で対象ファイルを修正して PASS まで再実行する
 
 ## スコープ外
 
