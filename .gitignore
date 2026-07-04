@@ -1,3 +1,6 @@
 .claude/tmp/
 user-scope/skills/*-workspace/
 node_modules/
+
+# unslop shared rule cache (MH4GF/shared-config/unslop/prh.yml が正。CI と unslop-guard hook が取得する)
+prh.yml

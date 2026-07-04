@@ -9,6 +9,6 @@ concurrency:
 
 jobs:
   unslop:
-    uses: MH4GF/shared-config/.github/workflows/_unslop.yml@5c5599edf2b382eba5c4b1d499a808f273f37af4 # 5c5599e
+    uses: MH4GF/shared-config/.github/workflows/_unslop.yml@5378bfce550384e1e9a83504ab2a71df28cc6920 # 5378bfc
     with:
       config: .textlintrc.json
