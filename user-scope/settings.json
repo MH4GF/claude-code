@@ -1,9 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/hooks/statusline-command.sh"
-  },
   "model": "claude-fable-5[1m]",
   "hooks": {
     "PreToolUse": [
@@ -28,5 +24,14 @@
         ]
       }
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/hooks/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "qa@mh4gf-marketplace": true
+  },
+  "agentPushNotifEnabled": true
 }
