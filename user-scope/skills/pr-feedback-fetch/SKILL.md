@@ -14,7 +14,7 @@ description: 指定 PR の 3 channel feedback (top-level / inline review / revie
 
 - `gh` CLI が認証済み (`gh auth status` で `Logged in` になっている)
 - 現 branch (引数なし時) または引数から PR 番号と repo (owner/repo) を解決できる
-- 出力は structured markdown。呼び出し元が workpad / report / 判断材料に直接転記できる形
+- 出力は structured markdown。呼び出し元が workpad / レポート / 判断材料に直接転記できる形
 
 ## スコープ外
 
