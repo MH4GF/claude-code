@@ -33,5 +33,6 @@
     "superpowers@claude-plugins-official": true,
     "qa@mh4gf-marketplace": true
   },
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "skipDangerousModePermissionPrompt": true
 }
