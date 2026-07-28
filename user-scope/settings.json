@@ -33,8 +33,7 @@
     "command": "bash ~/.claude/hooks/statusline-command.sh"
   },
   "enabledPlugins": {
-    "superpowers@claude-plugins-official": true,
-    "qa@mh4gf-marketplace": true
+    "superpowers@claude-plugins-official": true
   },
   "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true
