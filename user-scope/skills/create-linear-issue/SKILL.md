@@ -7,11 +7,11 @@ description: Linear issue を本セッション内で起票する。事前に su
 
 ユーザーの一行の意図を、`superpowers:brainstorming` で固めてから Linear issue として起票する skill。issue body は brainstorming の議論結果から直接組み立てる。Linear MCP server `linear-mh4gf` 経由で書き込む。
 
-Symphony 系の運用へ乗せる前提で、起票先は Linear workspace の project と1対1に対応する。Symphony が次の poll で拾うことを期待する。
+Symphony 系の運用へ乗せる前提で、起票先は Linear workspace の project と 1 対 1 に対応する。Symphony が次の poll で拾うことを期待する。
 
 ## なぜ brainstorming を必須にするか
 
-brainstorming skill の哲学に従う。「simple な issue こそ未検証の前提が無駄な実装を生む」。issue の Outcome / Why / 完了条件 を曖昧なまま起票すると、Symphony が拾った後の実装ワーカーは推測で動く羽目になる。brainstorming で意図を固めれば、その議論結果が issue body の素材になる。
+brainstorming skill の哲学に従う。「simple な issue こそ未検証の前提が無駄な実装を生む」。issue の Outcome / Why / 完了条件を曖昧なまま起票すると、Symphony が拾った後の実装ワーカーは推測で動く羽目になる。brainstorming で意図を固めれば、その議論結果が issue body の素材になる。
 
 ## 使用する MCP server
 
@@ -37,8 +37,8 @@ Skill ツール経由で `superpowers:brainstorming` を起動し、ユーザー
 
 - brainstorming skill の標準フローには「Write design doc → spec self-review → User reviews spec → Invoke writing-plans skill」がある
 - 本 skill 経由では design doc を別ファイルとして書かない。議論結果は直接 issue description へ統合する
-- 別ファイル書き出しと writing-plans 起動が起きそうになったら、ユーザー へ確認して スキップ する
-- 確認文言: 「create-linear-issue 経由なので design doc 書き出しと writing-plans を スキップ し、議論結果から直接 Linear 起票へ進む」
+- 別ファイル書き出しと writing-plans 起動が起きそうになったら、ユーザー へ確認してスキップする
+- 確認文言: 「create-linear-issue 経由なので design doc 書き出しと writing-plans をスキップし、議論結果から直接 Linear 起票へ進む」
 
 理由: bg session の作業 workspace は origin/main の depth=1 clone なので、scraps/open/ 等へ書いた新規ファイルを bg session 側から読めない。issue body だけが情報源になる前提で組む。
 
@@ -50,13 +50,13 @@ Skill ツール経由で `superpowers:brainstorming` を起動し、ユーザー
 
 ### 3. 重複を検索する
 
-brainstorming で出てきたキーワード (1〜2語) で既存 issue を検索する。
+brainstorming で出てきたキーワード (1〜2 語) で既存 issue を検索する。
 
 ```
 mcp__linear-mh4gf__list_issues(query="<keyword>", project="<projectId>")
 ```
 
-近い既存 issue が出た場合、新規作成せず該当の identifier と URL を ユーザー へ報告して止まる。
+近い既存 issue が出た場合、新規作成せず該当の identifier と URL をユーザー へ報告して止まる。
 
 ### 4. description を組み立てる
 
@@ -72,7 +72,7 @@ brainstorming の議論結果から、次の節構成へ落とす。
 
 ワーカー判断の余地 (実装時の選択肢) は `## 実装の自由度` として最後に置いてもよい。spec で確定しきれない open question を明示する。
 
-`## 参考` 節へ書いてよいのは、bg session の workspace で存在を保証できる path のみ。例として origin/main へ コミット 済みのファイル、関連 Linear issue (`XX-NN`)、公開 URL。scraps/open/ や .claude/tmp/ のような未 コミット の path は書かない。
+`## 参考` 節へ書いてよいのは、bg session の workspace で存在を保証できる path のみ。例として origin/main へコミット済みのファイル、関連 Linear issue (`XX-NN`)、公開 URL。scraps/open/ や .claude/tmp/ のような未コミットの path は書かない。
 
 ### 5. title と label を決める
 
@@ -86,7 +86,17 @@ label は次のいずれかから選ぶ。Symphony が WORKFLOW を route する
 
 文脈から自明 (例: 「skills/X への変更」「daily note の cron が…」「unslop の rule 追加」) なら自分で決めて宣言する。曖昧なら AskUserQuestion で確定する。label なしでは Symphony が拾わないため必須。
 
-### 6. MCP で起票する
+### 6. repo 固有の issue 規約を反映する
+
+label は repo 名と一対一に対応する。`~/ghq/github.com/MH4GF/<label>/` を探す。issue 起票規約があれば description をその節構成へ合わせる。
+
+- 探索先: repo root の `CLAUDE.md`、および agent ごとの `CLAUDE.md` (例: `agents/<project>/CLAUDE.md`)
+- 規約が見つからない場合、ステップ 4 の構成のまま進める
+- repo をローカルに持たないセッション (Claude Web など) では本ステップを飛ばす
+
+規約の最終的な充足は実装セッション側が担う。起票時の記載は入力の質を上げる手段として扱う。
+
+### 7. MCP で起票する
 
 `mcp__linear-mh4gf__save_issue` を呼ぶ。引数:
 
@@ -99,12 +109,12 @@ label は次のいずれかから選ぶ。Symphony が WORKFLOW を route する
 
 戻り値から `identifier` と `url` を取る。
 
-### 7. ユーザー に報告する
+### 8. ユーザー に報告する
 
 ユーザーに 1〜2 行で次を伝える。
 
 - 起票した issue の identifier (verbatim) と URL
-- Symphony が次の poll (約30秒以内) で拾うはずである旨
+- Symphony が次の poll (約 30 秒以内) で拾うはずである旨
 
 その後は本セッションの元タスクに戻る。
 
@@ -130,5 +140,5 @@ bg session の作業 workspace は origin/main の depth=1 clone なので、scr
 
 - 意図が複数 issue にまたがる時: brainstorming 内で「1 issue に統合か個別に分けるか」を AskUserQuestion で確認する。分けるときは brainstorming も issue ごとに分けて回す
 - 該当 project が `list_projects` に無い時: ユーザー へ「project 名が違うか、`linear-mh4gf` MCP の権限スコープに無い」と報告して止まる
-- MCP 呼び出しが認証エラーで失敗した時: `claude mcp` の再認証を ユーザー へ依頼してから止まる。リトライしない
-- brainstorming を スキップ したい正当な理由がある時 (= ユーザー が「brainstorming は不要、直接起票して」と明示した時): 例外的に brainstorming を踏まず、ステップ 2 以降のみ実行する。スキップ した事実を 報告に明記する
+- MCP 呼び出しが認証エラーで失敗した時: `claude mcp` の再認証をユーザー へ依頼してから止まる。リトライしない
+- brainstorming をスキップしたい正当な理由がある時 (= ユーザー が「brainstorming は不要、直接起票して」と明示した時): 例外的に brainstorming を踏まず、ステップ 2 以降のみ実行する。スキップした事実を報告に明記する
