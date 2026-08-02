@@ -44,6 +44,54 @@ binary path は `~/ghq/github.com/MH4GF/unslop/target/release/unslop` を hardco
 }
 ```
 
+## 蓋を閉じてもスリープさせない (nosleep)
+
+`user-scope/hooks/nosleep.sh` は、生きている Claude Code セッションがある間だけ蓋閉じスリープを抑止する hook。長時間の作業をラップトップで走らせたまま蓋を閉じたいとき用。
+
+アイドルスリープの抑止は Claude Code 本体がセッションごとに `caffeinate -i` を張って行っている。しかし蓋閉じ (clamshell) スリープは caffeinate では止まらず、`pmset disablesleep` でしか止まらない。この hook が受け持つのはその 1 点だけ。
+
+### セットアップ
+
+`setup.sh` の symlink で hook 本体と settings.json は配られる。root 権限が要る部分だけ、マシンごとに 1 度実行する。
+
+```bash
+bash user-scope/hooks/nosleep-install.sh
+```
+
+置くものは 2 つ。`/usr/local/bin/claude-sleep-guard` は root 所有の固定スクリプトで、`pmset disablesleep` の 0/1 以外を実行できない。`/etc/sudoers.d/claude-nosleep` はこのヘルパーに限って NOPASSWD を許可する。
+
+置き場が root 所有でなければ権限昇格の踏み台になる。そのためインストーラは `/usr/local` と `/usr/local/bin` の所有者・mode を検証してから進む。
+
+ヘルパー未設置のマシンで hook は no-op になる。導入したくない端末では上記を実行しない。
+
+### 挙動
+
+SessionStart と Stop で `acquire`、SessionEnd で `release` を呼ぶ。登録されたセッションが 1 つ以上あり、かつ電源条件を満たすときだけ `disablesleep` を 1 にする。
+
+Stop hook は毎ターン走る。電源が抜けたときは、次のターンで解除される。SessionEnd を落としたセッションの残骸も同様に掃除される。
+
+判定には状態ファイルを使わない。`pmset` の実際の値をそのまま読む。再起動やクラッシュで状態が飛んでも復帰できる。
+
+環境変数で調整する。
+
+| 変数 | 既定 | 意味 |
+| --- | --- | --- |
+| `CLAUDE_NOSLEEP_AC_ONLY` | `1` | AC 電源接続時のみ有効化する。`disablesleep` は電源別に設定できないため、カバンの中でバッテリーを焼かないようスクリプト側で判定する |
+| `CLAUDE_NOSLEEP_MIN_BATTERY` | `30` | `AC_ONLY=0` のとき、この残量を下回ったら解除する |
+| `CLAUDE_NOSLEEP_STALE_AFTER` | `7200` | transcript がこの秒数更新されないセッションは死んだものとして掃除する |
+
+### 確認と解除
+
+```bash
+bash user-scope/hooks/nosleep.sh status   # 登録状況と pmset の現状
+bash user-scope/hooks/nosleep.sh off      # 強制解除 (次の Stop hook で再度有効になる)
+bash user-scope/hooks/nosleep-install.sh uninstall
+```
+
+最後のセッションを SIGKILL やカーネルパニックで失うと `release` は飛ばず、抑止が残ったままになる。次にどれかのセッションが立ち上がった時点で掃除される。それまで待てない場合は `off` を叩く。
+
+定期的な掃除が要る場合は LaunchAgent を足す。空 payload で `nosleep.sh acquire` を叩けばよい。
+
 ## Development
 
 ### Run Tests
@@ -52,6 +100,7 @@ binary path は `~/ghq/github.com/MH4GF/unslop/target/release/unslop` を hardco
 bash tests/test-log-hook.sh      # Logger unit tests (9 cases)
 bash tests/test-aggregate.sh     # Aggregation smoke tests (17 cases)
 bash tests/test-comment-guard.sh # Comment-guard hook tests (30 cases)
+bash tests/test-nosleep.sh       # nosleep hook tests (17 cases)
 ```
 
 ## License
