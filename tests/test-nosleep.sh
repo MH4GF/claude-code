@@ -31,8 +31,14 @@ if [ "${2:-}" = ps ]; then
   esac
   exit 0
 fi
+# 実機の pmset -g に合わせる。設定名は disablesleep だが読み出し名は SleepDisabled で、
+# 0 のときは System-wide power settings 節ごと出てこない (macOS 26 で確認)。
+if [ "$(cat "$WORK/disablesleep")" = 1 ]; then
+  echo "System-wide power settings:"
+  printf ' SleepDisabled\t\t1\n'
+fi
+echo "Currently in use:"
 echo " sleep                15"
-[ "$(cat "$WORK/disablesleep")" = 1 ] && echo " disablesleep         1"
 exit 0
 EOF
 
