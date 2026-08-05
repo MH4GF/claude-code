@@ -49,8 +49,13 @@ lock() {
 
 # --- 電源判定 ---------------------------------------------------------------
 
+# 判定は必ず出力を変数に取ってから行う。`pmset | grep -q` だと grep が
+# 先頭マッチで抜けた瞬間に pmset が SIGPIPE で死に、pipefail (上の set) が
+# それを拾って終了ステータス 141 になる。真なのに偽を返す。
 on_ac() {
-  "$PMSET" -g ps 2>/dev/null | grep -q "'AC Power'"
+  local out
+  out="$("$PMSET" -g ps 2>/dev/null)"
+  [[ "$out" == *"'AC Power'"* ]]
 }
 
 battery_pct() {
@@ -69,8 +74,16 @@ power_ok() {
 
 # フラグファイルではなく pmset を真実の源にする。再起動やクラッシュで
 # 状態ファイルが消えても、実際の disablesleep から復帰できる。
+#
+# 設定するときの名前は disablesleep だが、pmset -g が読み出すときの名前は
+# SleepDisabled (System-wide power settings 節)。macOS 26 で確認。
+# 読めないと off 側が「既に解除済み」と誤判定して解除を飛ばすので、両方拾う。
+# パイプを使わない理由は on_ac のコメントを参照。
 engaged() {
-  "$PMSET" -g 2>/dev/null | grep -qE '^[[:space:]]*disablesleep[[:space:]]+1'
+  local out re
+  out="$("$PMSET" -g 2>/dev/null)"
+  re='(^|'$'\n'')[[:space:]]*(disablesleep|SleepDisabled)[[:space:]]+1([[:space:]]|$)'
+  [[ "$out" =~ $re ]]
 }
 
 apply() {
