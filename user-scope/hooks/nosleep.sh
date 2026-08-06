@@ -20,6 +20,10 @@ SESSION_DIR="$STATE_DIR/sessions"
 LOCK_DIR="$STATE_DIR/lock"
 GUARD="${CLAUDE_NOSLEEP_GUARD:-/usr/local/bin/claude-sleep-guard}"
 PMSET="${CLAUDE_NOSLEEP_PMSET:-/usr/bin/pmset}"
+# 絶対パスで呼ぶ。GNU coreutils の stat では -f が --file-system を意味し、
+# `stat -f %m` が mtime ではなく "  File: ..." を返す。Nix や mise を有効にした
+# セッションから hook が走ると PATH 解決でそちらを掴む。
+STAT="${CLAUDE_NOSLEEP_STAT:-/usr/bin/stat}"
 # パスワードを聞ける端末が無いので必ず -n。許可が無ければ静かに失敗させる。
 SUDO="${CLAUDE_NOSLEEP_SUDO:-/usr/bin/sudo -n}"
 
@@ -121,10 +125,15 @@ reconcile() {
     transcript="$(cat "$file" 2>/dev/null)"
     stamp=""
     if [ -n "$transcript" ] && [ -f "$transcript" ]; then
-      stamp="$(stat -f %m "$transcript" 2>/dev/null)"
+      stamp="$("$STAT" -f %m "$transcript" 2>/dev/null)"
     fi
     # transcript が無い、または読めない場合は登録ファイル自身の mtime を時計にする
-    [ -z "$stamp" ] && stamp="$(stat -f %m "$file" 2>/dev/null || echo "$now")"
+    [ -z "$stamp" ] && stamp="$("$STAT" -f %m "$file" 2>/dev/null || echo "$now")"
+    # 数値以外は今の時刻で代用する。set -u 下で $(( )) に非数値を渡すと、
+    # その語を変数名と解釈して unbound variable になり hook ごと落ちる。
+    case "$stamp" in
+      *[!0-9]*|'') stamp="$now" ;;
+    esac
     if [ $((now - stamp)) -gt "$STALE_AFTER" ]; then
       rm -f "$file"
       continue
