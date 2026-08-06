@@ -252,6 +252,37 @@ else
   fail=$((fail + 1))
 fi
 
+# 15. GNU coreutils の stat を掴んでも落ちない
+# GNU では -f が --file-system なので `stat -f %m` が mtime ではなく
+# "  File: ..." を返す。これが $(( )) に入ると set -u で hook ごと落ちていた。
+# PATH に置いて再現する。env 変数で渡すと絶対パス指定になり、
+# PATH 解決していた頃のコードを通らず回帰を検出できない。
+mkdir -p "$WORK/gnubin"
+cat > "$WORK/gnubin/stat" <<'EOF'
+#!/bin/bash
+echo "stat: cannot read file system information for '%m'" >&2
+printf '  File: "%s"\n    ID: 1234 Namelen: 255     Type: apfs\n' "${@: -1}"
+exit 1
+EOF
+chmod +x "$WORK/gnubin/stat"
+reset_env
+: > "$WORK/t2.jsonl"
+err="$(printf '{"session_id":"s1","transcript_path":"%s"}' "$WORK/t2.jsonl" \
+  | env WORK="$WORK" \
+      PATH="$WORK/gnubin:$PATH" \
+      CLAUDE_NOSLEEP_STATE="$WORK/state" \
+      CLAUDE_NOSLEEP_GUARD="$WORK/bin/guard" \
+      CLAUDE_NOSLEEP_PMSET="$WORK/bin/pmset" \
+      CLAUDE_NOSLEEP_SUDO=env \
+      bash "$HOOK" acquire 2>&1 >/dev/null)"
+if [ -f "$WORK/state/sessions/s1" ] && [ "$(cat "$WORK/disablesleep")" = 1 ] && [ -z "$err" ]; then
+  echo "PASS GNU stat でも落ちない"
+  pass=$((pass + 1))
+else
+  echo "FAIL GNU stat でも落ちない: err=[$err] registry=$(ls -A "$WORK/state/sessions" 2>/dev/null) disablesleep=$(cat "$WORK/disablesleep")"
+  fail=$((fail + 1))
+fi
+
 echo
 echo "pass=$pass fail=$fail"
 [ "$fail" -eq 0 ]
