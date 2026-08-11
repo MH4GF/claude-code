@@ -30,6 +30,8 @@ cd ~/ghq/github.com/MH4GF/unslop && cargo build --release
 
 binary path は `~/ghq/github.com/MH4GF/unslop/target/release/unslop` を hardcode している。`UNSLOP_BIN` 環境変数で上書きできる。`UNSLOP_GUARD=off` で個別セッションを無効化する。
 
+現在この hook は `user-scope/settings.json` の `env.UNSLOP_GUARD: "off"` で一時停止中。再開するにはその 1 行を削除する。
+
 ノイズが多いルールは `.textlintrc.json` で個別 disable する。
 
 ```json
