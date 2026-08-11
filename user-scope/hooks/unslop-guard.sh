@@ -65,16 +65,12 @@ UNSLOP_REPO="${UNSLOP_REPO:-$HOME/ghq/github.com/MH4GF/unslop}"
 git_dir=$(git -C "$UNSLOP_REPO" rev-parse --absolute-git-dir 2>/dev/null)
 if [ -n "$git_dir" ]; then
   # origin/main を TTL 24h で best-effort fetch する (prh cache と同じ方針)。
-  # 成否に関わらず stamp を更新し、offline でも毎回 fetch を試みて待たされないようにする。
+  # TTL 内は fetch を skip する。offline で fetch が失敗しても stamp を更新し、
+  # 次の 24h は再試行せず待たされないようにする。timeout があれば 10s で打ち切る。
   fetch_stamp="$git_dir/.unslop-guard-fetch"
   if [ ! -f "$fetch_stamp" ] || [ -n "$(find "$fetch_stamp" -mmin +1440 2>/dev/null)" ]; then
-    if command -v timeout >/dev/null 2>&1; then
-      timeout 10 git -C "$UNSLOP_REPO" fetch --quiet origin main 2>/dev/null
-    elif command -v gtimeout >/dev/null 2>&1; then
-      gtimeout 10 git -C "$UNSLOP_REPO" fetch --quiet origin main 2>/dev/null
-    else
-      git -C "$UNSLOP_REPO" fetch --quiet origin main 2>/dev/null
-    fi
+    timeout_cmd=$(command -v timeout || command -v gtimeout)
+    ${timeout_cmd:+$timeout_cmd 10} git -C "$UNSLOP_REPO" fetch --quiet origin main 2>/dev/null
     touch "$fetch_stamp" 2>/dev/null
   fi
   commit_ts=$(git -C "$UNSLOP_REPO" log -1 --format=%ct origin/main 2>/dev/null)
@@ -104,7 +100,8 @@ fi
 if [ -n "$out" ]; then
   printf '%s\n' "$out" >&2
 fi
-# lint が clean でも binary が古ければ通知する。編集は既に適用済みなので止めない。
+# lint が clean でも binary が古ければ exit 2 で通知する。編集は PostToolUse 時点で
+# 適用済みのため block にはならず、agent へ鮮度不足を伝える手段として使う。
 if [ -n "$staleness_note" ]; then
   printf '%s\n' "$staleness_note" >&2
   exit 2
