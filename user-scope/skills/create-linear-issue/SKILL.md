@@ -15,7 +15,7 @@ brainstorming skill の哲学に従う。「simple な issue こそ未検証の�
 
 ## 使用する MCP server
 
-Linear MCP server の登録名は端末ごとに違う。個人端末と業務用端末では別の名前が割り当たるため、本文に特定の server 名を書かない。起票の前段として、利用可能な Linear MCP server を実行時に解決する。
+起票の前段として、利用可能な Linear MCP server を実行時に解決する。特定の server 名を本文へ直書きしない理由は「設計判断と理由」節に記す。
 
 1. 利用可能なツールから `mcp__<server>__save_issue` を持つ server を数える。これが Linear MCP server の集合。
 2. 該当が 1 つだけなら、その server を採用する。追加の質問はしない。
@@ -138,7 +138,7 @@ brainstorming と Linear 起票を本セッションで完結させる。別 bg 
 
 Linear MCP は claude のグローバル設定で workspace ごとに別 server として登録される。登録名は端末ごとに違い、個人端末と業務用端末で異なる。特定の server 名を本文へ書くと、その名前を持たない端末で毎回「MCP が無い」と報告する羽目になる。だから名前を直書きせず、`save_issue` を持つ server を実行時に列挙して解決する。
 
-ただし誤送防止の意図は残す。別 workspace の Linear MCP が同時に起動していると、ai-native 向けの起票指示を誤って別 workspace へ届けてしまう。そのため利用可能な Linear server を数え、1 つなら黙って採用し、複数あるときのみ AskUserQuestion で起票先を確定する。1 セッションの起票は解決した 1 つの server の prefix へ向け、別 server を混在させない。
+ただし誤送防止の意図は残す。別 workspace の Linear MCP が同時に起動していると、ai-native 向けの起票指示を誤って別 workspace へ届けてしまう。複数あるときだけ起票先を確認する手順にしているのは、この誤送を防ぐため。1 セッションの起票は解決した 1 つの server の prefix へ向け、別 server を混在させない。
 
 ### label で workflow を route する
 
