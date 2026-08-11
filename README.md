@@ -30,6 +30,8 @@ cd ~/ghq/github.com/MH4GF/unslop && cargo build --release
 
 binary path は `~/ghq/github.com/MH4GF/unslop/target/release/unslop` を hardcode している。`UNSLOP_BIN` 環境変数で上書きできる。`UNSLOP_GUARD=off` で個別セッションを無効化する。
 
+binary は手動 `cargo build --release` でしか更新されない。放置すると古いルールのまま silent に lint し続けてしまう。これを防ぐため、hook は毎回 unslop repo の `origin/main` 最新コミット時刻と binary の mtime を比べる。binary のほうが古ければ、その事実を stderr へ通知する。鮮度が十分なら従来どおり静かに動く。origin/main は TTL 24h で best-effort に fetch する。git 不在・repo 不明・offline など判定できないときは黙って続行し、編集を止めない。unslop repo path は `UNSLOP_REPO` 環境変数で binary path から独立して上書きできる (既定 `~/ghq/github.com/MH4GF/unslop`)。
+
 ノイズが多いルールは `.textlintrc.json` で個別 disable する。
 
 ```json
