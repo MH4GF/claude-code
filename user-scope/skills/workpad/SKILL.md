@@ -104,7 +104,7 @@ identifier `#123` の `123` が issue number。`<repo>` は `WORKFLOW.md` の `t
 
 本文は複数行になるのでファイルへ書き出して `-F body=@<file>` で渡す。コマンドライン引数へ直接埋めない。
 
-GitHub の issue コメントに resolve 状態は無いため、resolved の判定は行わない。
+GitHub の issue コメントに resolve 状態が無いため、resolved の判定は行わない。
 
 ## 各セクションの責務
 
