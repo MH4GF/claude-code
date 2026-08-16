@@ -22,7 +22,7 @@ Symphony からディスパッチされた bg セッションが issue を処理
 
 ## Tracker 操作
 
-以降の手順が参照する操作の実体。`<repo>` に `WORKFLOW.md` の `tracker.repo` (`owner/name`) を、`<n>` に identifier `#123` の数値部分を入れる。
+以降の手順が参照する操作の実体。`<repo>` は `WORKFLOW.md` の `tracker.repo` (`owner/name`) を指す。`<n>` は identifier `#123` の数値部分。
 
 | 操作 | kind: linear | kind: github |
 | --- | --- | --- |
