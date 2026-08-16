@@ -139,7 +139,9 @@ project レスポンスが teams を含むなら、その値を team ID とし�
 | 重複検知 | `gh issue list --repo <repo> --search "<keyword>" --state all` |
 | 起票 | `gh issue create --repo <repo> --title "<title>" --body-file .claude/tmp/create-issue-body-<slug>.md --label "status:todo"` |
 
-`--label "status:todo"` が Symphony の `active_states` に対応する開始状態。設計議論を挟みたい issue はラベルなしで起票する。`Backlog` 扱いとなり Symphony の pick up 対象から外れる。
+`--label "status:todo"` が Symphony の `active_states` に対応する開始状態。設計議論を先に挟みたい issue は `--label "status:backlog"` を付けて起票する。Symphony の pick up 対象から外れ、Backlog の一覧に並ぶ。
+
+`status:*` を必ず 1 つ付ける。無しでも dispatch されないが、それは「Symphony 管理外」を意味する状態で、bot が立てる恒久 issue と同じ扱いになり Backlog の一覧から漏れる。
 
 優先度を付けるなら `--label "priority:<1-4>"` を併記する。
 
