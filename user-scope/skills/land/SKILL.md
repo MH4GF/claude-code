@@ -182,10 +182,18 @@ exit code の意味
 - 小刻みな更新を散らさない。修正を 1 バッチした後に "レビュー反映済み" のトップレベルコメントを 1 つだけ出す
 - ドキュメント系フィードバックは挙動と一致しているかを確認する (レビュー受けでドキュメントだけ変える対応は避ける)
 
-## Linear 連携
+## Tracker 連携
 
-本スキルは GitHub 側の land 作業を扱う。Linear status との関係は次のとおり
+本スキルは GitHub 側の land 作業を扱う。tracker の status との関係は次のとおり。
 
-- 起動条件 — Linear status が `Merging` であること (`mcp__linear-mh4gf__get_issue` の `state.name` で確認)
-- マージ完了後 — GitHub webhook 経由で Linear gitAutomationStates の `merge` event が発火し `Done` へ自動遷移する。10 秒待っても遷移しない時のみ `mcp__linear-mh4gf__save_issue` で手動遷移する (state ID は `mcp__linear-mh4gf__list_issue_statuses` 経由)
+- 起動条件。status が `Merging` であること
 - `Merging` 以外の状態の時は本スキルを起動しない。直接 `gh pr merge` を叩かない
+- マージ完了後は status が `Done` へ自動遷移する。10 秒待っても遷移しない時のみ手動で遷移させる
+
+tracker は作業中の repo の `WORKFLOW.md` frontmatter `tracker.kind` で判定する。works repo のみ `agents/ai-native/WORKFLOW.md`、それ以外は repo root。読み取れない場合は `linear` として扱う。
+
+| 操作 | kind: linear | kind: github |
+| --- | --- | --- |
+| status 確認 | `mcp__linear-mh4gf__get_issue` の `state.name` | `gh issue view <n> --repo <repo> --json labels` の `status:*` ラベル |
+| 自動遷移の仕組み | GitHub webhook 経由で gitAutomationStates の `merge` event が `Done` を発火 | PR 本文の `Closes <identifier>` によりマージ時に issue が close される |
+| 手動遷移 | `mcp__linear-mh4gf__save_issue` (state ID は `mcp__linear-mh4gf__list_issue_statuses` 経由) | `gh issue close <n> --repo <repo> --reason completed` |

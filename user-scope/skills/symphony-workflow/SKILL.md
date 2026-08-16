@@ -1,36 +1,62 @@
 ---
 name: symphony-workflow
-description: Symphony orchestrator からディスパッチされた bg セッションの共通実行手順。Linear issue のステータス振り分け、workpad 運用、実装から Human Review 遷移、マージまでを定義する。Symphony の bg セッション起動直後に呼ぶ
+description: Symphony orchestrator からディスパッチされた bg セッションの共通実行手順。issue のステータス振り分け、workpad 運用、実装から Human Review 遷移、マージまでを定義する。Symphony の bg セッション起動直後に呼ぶ
 ---
 
 # symphony-workflow
 
-Symphony からディスパッチされた bg セッションが Linear issue を処理する共通手順。リポジトリ固有の設定 (tracker / workspace / clone) と例外ルールはディスパッチプロンプト (各リポジトリの `WORKFLOW.md`) 側にあり、本スキルの共通手順を上書きする。
+Symphony からディスパッチされた bg セッションが issue を処理する共通手順。リポジトリ固有の設定 (tracker / workspace / clone) と例外ルールはディスパッチプロンプト (各リポジトリの `WORKFLOW.md`) 側にあり、本スキルの共通手順を上書きする。
+
+## Tracker の判定
+
+本スキルは tracker を問わず同じ手順で動く。tracker 固有の操作だけを「Tracker 操作」の表から引く。
+
+作業中の repo の `WORKFLOW.md` frontmatter `tracker.kind` を読んで判定する。works repo のみ `agents/ai-native/WORKFLOW.md`、それ以外は repo root の `WORKFLOW.md` に置かれている。読み取れない場合は `linear` として扱う。
 
 ## 前提条件
 
-Linear MCP サーバー `linear-mh4gf` が利用可能である前提。設定されていなければ即座に止まり、ブロッカーを明示する。
+- `kind: linear` — Linear MCP サーバー `linear-mh4gf` が利用可能である前提
+- `kind: github` — `gh` が認証済みである前提
+
+設定されていなければ即座に止まり、ブロッカーを明示する。
+
+## Tracker 操作
+
+以降の手順が参照する操作の実体。`<repo>` は `WORKFLOW.md` の `tracker.repo` (`owner/name`)、`<n>` は identifier `#123` の数値部分。
+
+| 操作 | kind: linear | kind: github |
+| --- | --- | --- |
+| issue 取得 | `mcp__linear-mh4gf__get_issue` を identifier で呼ぶ | `gh issue view <n> --repo <repo> --json number,title,body,state,labels,url` |
+| ステータス遷移 | `mcp__linear-mh4gf__save_issue` で state を更新する | 非終端は `gh issue edit <n> --repo <repo> --add-label "status:<slug>"`、終端は `gh issue close <n> --repo <repo> --reason completed` |
+| issue 検索 | `mcp__linear-mh4gf__list_issues` | `gh issue list --repo <repo> --search "<query>" --state all` |
+| issue 起票 | `mcp__linear-mh4gf__save_issue` | `gh issue create --repo <repo> --title <title> --body-file <path> --label "priority:<n>"` |
+| コメント削除 | `mcp__linear-mh4gf__delete_comment` | `gh api --method DELETE repos/<repo>/issues/comments/<comment_id>` |
+| PR リンク | Linear のアタッチメント (PR タイトル経由で自動付与) | PR 本文の `Closes <identifier>` |
+
+`status:<slug>` はステータス名を小文字化し、英数字以外の連続を `-` に置換したもの。`In Progress` なら `status:in-progress`。`kind: github` では `status:*` を 1 つだけ持つ規約で、古いラベルは repo 側の正規化 Action が剥がす。手で剥がす操作は不要。
+
+`kind: github` の終端遷移は `Canceled` のみ `--reason "not planned"` を使う。
 
 ## 基本姿勢
 
 - 本セッションは無人実行のオーケストレーション。人間に追加対応を求めない
 - セッション起動直後に `workpad` スキルを呼ぶ。`## Codex Workpad` コメントを検索または作成し、新しい実装に入る前に最新化する
-- まず Linear ステータスを確認し、下のステータスマップに従って振り分ける
+- まずステータスを確認し、下のステータスマップに従って振り分ける
 - 実装より先に計画と検証設計に十分な時間を割く
 - 修正対象を明示するため、変更前に現状の挙動や issue のシグナルを再現させる
 - チケットのメタデータ (state、チェックリスト、受け入れ条件、リンク) を最新に保つ
 - 進捗の唯一の一次ソースは `## Codex Workpad` コメント 1 つ。"done" や要約の別コメントは出さない
 - **turn は予告なく打ち切られる。** Symphony は turn timeout でセッションを強制終了し、次は新規セッションが workpad とブランチのコードだけを頼りに再開する。workpad に書かれていない調査結果 / 判断 / 検証結果は失われ、次セッションが同じ探索をやり直す。workpad の更新は「余裕があればやる作業」ではなく、進捗を確定させる唯一の手段として扱う。詳細は「workpad 更新の必須タイミング」を参照する
 - チケットに `Validation` / `Test Plan` / `Testing` の節があれば必須受け入れ条件として workpad に転記し、完了前に実行する
-- スコープ外の指摘を実行中に発見したら、次の 4 つの門をすべて通る場合に限り `mcp__linear-mh4gf__save_issue` で別 issue を起票する。本 issue のスコープは広げない
+- スコープ外の指摘を実行中に発見したら、次の 4 つの門をすべて通る場合に限り「Tracker 操作」の issue 起票で別 issue を立てる。本 issue のスコープは広げない
   - ユーザーに実害が出る指摘か。観測性・保守性・ドキュメント・テストの体裁だけを扱う指摘は起票しない
-  - 既存 issue と重複していないか。起票前に `mcp__linear-mh4gf__list_issues` で同一症状を検索する。検索は `Backlog` に限定せず、終端状態 (`Done` / `Canceled` / `Duplicate`) 以外をすべて対象にする。実装中や `In Review` の issue と重なることがあり、状態を絞ると取りこぼす。見つかれば起票せずその issue へ `related` を貼る
+  - 既存 issue と重複していないか。起票前に「Tracker 操作」の issue 検索で同一症状を探す。検索は `Backlog` に限定せず、終端状態 (`Done` / `Canceled`) 以外をすべて対象にする。実装中や `Human Review` の issue と重なることがあり、状態を絞ると取りこぼす。見つかれば起票せずその issue へ関連リンクを貼る
   - 指摘の前提が `origin/main` に存在するか。本ブランチでしか成立しない指摘は起票せず、PR のレビューコメントとして残す
   - `priority` を決められるか。必ず設定する。決められないなら起票の材料が足りていない
-  - 4 つを通った issue は title / description / 受け入れ条件を明記する。`Backlog` に置き、同一プロジェクトに紐付け、本 issue を `related` でリンクする。依存があれば `blockedBy` を貼る
+  - 4 つを通った issue は title / description / 受け入れ条件を明記する。`Backlog` に置き、本 issue へのリンクを本文に書く。`kind: linear` は同一プロジェクトへ紐付け、依存があれば `blockedBy` を貼る。`kind: github` は同一 repo に立てる。依存は blocking の仕組みが無いため `Backlog` 据え置きで表現する
 - 門を通らなかった指摘は起票しない。並列レビュースイープの `### Notes` に 1 行残して終える
 - 1 セッションで起票する issue は 3 件までを目安とする。超える指摘が出たときは本 PR のスコープ設定が誤っている可能性が高い。その旨を workpad の `### Confusions` に書く
-- Linear ステータスは対応する品質バーを満たした時だけ動かす
+- ステータスは対応する品質バーを満たした時だけ動かす
 - 必須要件 / 秘匿情報 / 権限の不足によるブロッカーでなければ、最後まで自律稼働する
 - 阻害時のエスケープハッチは真の外部ブロッカーかつ代替手段を尽くした時のみ使う
 - 最終メッセージは完了した対応とブロッカーのみ書く。「ユーザーへの次の手順」は書かない
@@ -58,10 +84,10 @@ Linear MCP サーバー `linear-mh4gf` が利用可能である前提。設定�
 
 ## 関連スキル
 
-- `workpad` — 単一の `## Codex Workpad` Linear コメントを検索または作成し、計画 / 受け入れ条件 / 検証 / メモを 1 箇所に集約する
+- `workpad` — 単一の `## Codex Workpad` コメントを検索または作成し、計画 / 受け入れ条件 / 検証 / メモを 1 箇所に集約する
 - `parallel-review` — `Human Review` 遷移前に bg セッション自身が行うセルフレビュー。AI 生成ノイズ、CLAUDE.md 違反、挙動の正しさに関わるバグの一次検出を行う。構成ツールと出力フォーマットはスキル本体を一次ソースとする。「並列レビュースイープ」の節で必須
 - `pr-feedback-fetch` — PR の 3 チャンネルのフィードバック (トップレベル / インラインレビュー / レビューサマリー) を 1 回で取得する。「PR フィードバックスイープ」の節で必須。スキルが未配置の環境では同節の代替 3 コマンドを直接実行する
-- `land` — Linear ステータスが `Merging` になったら、`land` スキルを繰り返し呼んで PR がマージされるまで進める。`gh pr merge` を直接叩かない
+- `land` — ステータスが `Merging` になったら、`land` スキルを繰り返し呼んで PR がマージされるまで進める。`gh pr merge` を直接叩かない
 
 ## ステータスマップ
 
@@ -76,11 +102,11 @@ Linear MCP サーバー `linear-mh4gf` が利用可能である前提。設定�
 
 ## ステップ 0: 現在のチケット状態を判定して振り分ける
 
-1. `mcp__linear-mh4gf__get_issue` を identifier で呼んで issue を取得する
-2. 現在の Linear ステータスを読む
+1. 「Tracker 操作」の issue 取得を identifier で呼んで issue を取得する
+2. 現在のステータスを読む
 3. 対応フローへ振り分ける
    - `Backlog` — issue を変更しない。`Todo` へ人間が動かすのを待って止まる
-   - `Todo` — 即 `mcp__linear-mh4gf__save_issue` で `In Progress` へ動かす。続けて `workpad` スキルで初期コメントを検索または作成し、ステップ 1 へ進む
+   - `Todo` — 即「Tracker 操作」のステータス遷移で `In Progress` へ動かす。続けて `workpad` スキルで初期コメントを検索または作成し、ステップ 1 へ進む
      - 開始時点で PR が既にアタッチされていれば、まず PR の未解決コメントを全件読み、必須の変更点と明示プッシュバックの方針を立てる
    - `In Progress` — 現行の workpad コメントを起点に実行フローを続ける
    - `Human Review` — 終端。何もせず終了する
@@ -91,7 +117,7 @@ Linear MCP サーバー `linear-mh4gf` が利用可能である前提。設定�
    - 既存ブランチの PR が `CLOSED` または `MERGED` なら、前回のブランチ作業は再利用しない
    - `origin/main` から新規ブランチを切って、新規の試行として実行フローを再起動する
 5. `Todo` チケットは次の順で開始する
-   - `mcp__linear-mh4gf__save_issue(state: "In Progress")`
+   - 「Tracker 操作」のステータス遷移で `In Progress` へ動かす
    - `workpad` スキルで `## Codex Workpad` の初期コメントを検索または作成する
    - その後で分析 / 計画 / 実装を始める
 6. ステータスと issue 内容が不整合なら、workpad に短いメモを追記して、安全側のフローで進める
@@ -113,7 +139,7 @@ Linear MCP サーバー `linear-mh4gf` が利用可能である前提。設定�
 5. workpad 先頭に環境スタンプを 1 行のコードフェンスで置く
    - 形式: `<host>:<abs-workdir>@<short-sha>`
    - 例: `mac-studio:/Users/hermes/.symphony/workspaces/<repo>/MH-XX@f3702a4`
-   - Linear issue のフィールドから導出できる情報 (issue ID、ステータス、ブランチ、PR リンク) は重複させない
+   - issue のフィールドから導出できる情報 (issue ID、ステータス、ブランチ、PR リンク) は重複させない
 6. 受け入れ条件と TODO を同じコメント内にチェックリストとして書く
    - 変更がユーザー向け機能なら、実際の利用経路を最初から最後まで辿る UI 確認の受け入れ条件を含める
    - チケットに `Validation` / `Test Plan` / `Testing` の節があれば、workpad の `Acceptance Criteria` と `Validation` へ必須チェックボックスとして転記する。任意項目への格下げは禁止
@@ -125,7 +151,7 @@ Linear MCP サーバー `linear-mh4gf` が利用可能である前提。設定�
 ## ステップ 2: 実行フェーズ (Todo → In Progress → Human Review)
 
 1. 現在のリポジトリ状態 (`branch`, `git status`, `HEAD`) を確認し、開始時の `origin/main` 同期結果が workpad に書かれているかを再確認する。書かれていなければ書く
-2. Linear ステータスが `Todo` なら `In Progress` へ動かす。それ以外はそのまま
+2. ステータスが `Todo` なら `In Progress` へ動かす。それ以外はそのまま
 3. 既存の workpad コメントを実行中のチェックリストとして扱う。スコープ / リスク / 検証方針 / 新発見タスクなど、現実が変わったら躊躇なく書き換える
 4. 階層 TODO に沿って実装し、コメントを最新に保つ
    - 完了項目にチェックを付ける
@@ -141,7 +167,7 @@ Linear MCP サーバー `linear-mh4gf` が利用可能である前提。設定�
    - 一時的な編集はコミット / プッシュ前に必ず戻し、内容と結果を workpad の `Validation` / `Notes` に残す
 6. 受け入れ条件を再点検し、欠落があれば塞ぐ
 7. `git push` の前に必ずスコープの検証を走らせ、green を確認する。失敗なら原因を直してから再実行し、green を確認してからコミットしてプッシュする
-8. PR URL を issue に紐付ける。Linear のアタッチメントを優先し、無ければ workpad コメントにリンクを残す
+8. PR URL を issue に紐付ける。「Tracker 操作」の PR リンクを優先し、無ければ workpad コメントにリンクを残す
 9. `origin/main` の最新をブランチへマージし、コンフリクトを解消し、チェックを再実行する
 10. workpad コメントを最終状態へ更新する
     - 計画 / 受け入れ条件 / 検証のチェックリスト完了項目を全てチェック済みにする
@@ -156,7 +182,7 @@ Linear MCP サーバー `linear-mh4gf` が利用可能である前提。設定�
     - チケット由来の検証 / テスト計画の項目が全て workpad でチェック済みであることを確認する
     - 状態遷移前に workpad を開き直し、`Plan` / `Acceptance Criteria` / `Validation` が完了した作業と過不足なく一致するよう更新する
     - `gh pr view --json isDraft` で Draft 状態を確認し、Draft なら `gh pr ready` で Ready 化する。これで GitHub 側の `ready_for_review` イベントが発火し、Slack のレビュー通知が飛ぶ。例外: 阻害時のエスケープハッチに該当する真の外部ブロッカーの場合のみ Draft 維持可
-12. 上記を満たしたら `mcp__linear-mh4gf__save_issue` で `Human Review` へ動かす
+12. 上記を満たしたら「Tracker 操作」のステータス遷移で `Human Review` へ動かす
     - 例外: GitHub 以外の必須ツール / 認証が不足し、阻害時のエスケープハッチに該当する場合のみ動かす
     - その時はブロッカー概要と解除に必要な対応を workpad に書いた上で `Human Review` へ動かす
 13. `Todo` 起点で既に PR がアタッチされていたチケットは次を満たす
@@ -167,13 +193,13 @@ Linear MCP サーバー `linear-mh4gf` が利用可能である前提。設定�
 ## ステップ 3: Human Review とマージ
 
 1. `Human Review` は本ワークフローの終端。bg セッションは終了し、Symphony は人間の操作まで再ディスパッチを止める
-2. 人間が PR をレビューする。少量の追加変更が必要なら、PR を Draft に戻す (`gh pr ready --undo`) か、`gitAutomationStates.draft` イベント経由で `In Progress` へ動かす。Symphony が再ディスパッチし、bg セッションが既存 workpad から再開する
+2. 人間が PR をレビューする。少量の追加変更が必要なら、ステータスを `In Progress` へ動かす。`kind: linear` は PR を Draft に戻す (`gh pr ready --undo`) と `gitAutomationStates.draft` 経由でも遷移する。Symphony が再ディスパッチし、bg セッションが既存 workpad から再開する
 3. 方針の全リセットが必要なら、人間が `Rework` へ動かす。Symphony が再ディスパッチし、bg セッションがステップ 4 を実行する
 4. Approve され、人間が `Merging` へ動かしたら、Symphony が再ディスパッチし、bg セッションが `land` スキルを起動する
 5. `Merging` 状態では `land` スキルを繰り返し呼んで PR がマージされるまで進める
-   - `land` スキルは CI green / `mergeable` / Approve / Linear ステータス `Merging` を事前検証する
+   - `land` スキルは CI green / `mergeable` / Approve / ステータス `Merging` を事前検証する
    - 通れば `gh pr merge --squash --delete-branch` を実行する
-   - `gitAutomationStates.merge` イベント経由で Linear ステータスは `Done` へ動く
+   - マージ後にステータスは `Done` へ動く。`kind: linear` は `gitAutomationStates.merge` イベント経由、`kind: github` は PR 本文の `Closes <identifier>` により issue が close される
    - `gh pr merge` を直接叩かない
 
 ## ステップ 4: Rework の処理
@@ -181,10 +207,10 @@ Linear MCP サーバー `linear-mh4gf` が利用可能である前提。設定�
 1. `Rework` は方針の全リセット。少量の修正は通常の `In Progress` → `Human Review` のループで扱う。`Rework` は明示的な「やり直し」信号
 2. issue 本文と人間の全コメントを読み直し、今回の試行で何を変えるかを明示する。新 workpad の `Notes` に差分を書く
 3. 既存 PR を `gh pr close` で閉じる
-4. 既存の `## Codex Workpad` コメントを `mcp__linear-mh4gf__delete_comment` で削除する。新規ブランチ + 新規 workpad の規約
+4. 既存の `## Codex Workpad` コメントを「Tracker 操作」のコメント削除で削除する。新規ブランチ + 新規 workpad の規約
 5. `origin/main` から新規ブランチを切る
 6. 通常の開始フローへ戻る
-   - Linear ステータスが `Todo` なら `In Progress` へ動かす。それ以外はそのまま
+   - ステータスが `Todo` なら `In Progress` へ動かす。それ以外はそのまま
    - 新規の `## Codex Workpad` 初期コメントを作る
    - 新規の計画 / チェックリストを立て、最後まで実行する
 
@@ -260,7 +286,7 @@ PR がアタッチされたチケットは、本スイープを完走させて�
 
 - ブランチの PR が既にクローズ済みまたはマージ済みなら、そのブランチや前回の実装状態を継続に使わない
 - クローズ済み / マージ済みの PR を持つチケットは、`origin/main` から新規ブランチを切り、再現 / 計画からやり直す
-- Linear ステータスが `Backlog` なら何も変更しない。人間が `Todo` へ動かすのを待つ
+- ステータスが `Backlog` なら何も変更しない。人間が `Todo` へ動かすのを待つ
 - 計画や進捗の追跡のために issue 本文を編集しない
 - workpad コメントは 1 issue につき 1 つだけ (`## Codex Workpad`)
 - workpad を更新しないまま作業を続けない。「workpad 更新の必須タイミング」の条件を満たしたら、次の作業より先に更新する
@@ -310,25 +336,33 @@ PR がアタッチされたチケットは、本スイープを完走させて�
 
 ## Identifier ルール
 
-PR タイトル末尾に `(<issue identifier>)` を付ける (例: `docs(workflow): ... (MH-67)`)。identifier はディスパッチプロンプトの `## Issue` 節の値をそのまま使う。Linear がこの記載を読んで PR を自動アタッチする。
+identifier はディスパッチプロンプトの `## Issue` 節の値をそのまま使う。URL スラッグやタイトルから推論した別形 (例: 余計な桁を足す等) を書かない。
 
-参照 — <https://linear.app/docs/github#linking-linear-issues-to-github-prs>
+### kind: linear
 
-URL スラッグやタイトルから推論した別形 (例: 余計な桁を足す等) を書かない。
+PR タイトル末尾に `(<issue identifier>)` を付ける (例: `docs(workflow): ... (MH-67)`)。Linear がこの記載を読んで PR を自動アタッチする。
+
+参照: <https://linear.app/docs/github#linking-linear-issues-to-github-prs>
 
 ブランチ名や PR 本文には identifier の記載を要求しない。リンクは PR タイトル 1 箇所だけで成立する。
 
 アタッチ検証は PR 作成直後の必須ステップとして次を行う
 
-- PR 作成から 30〜60 秒後に `mcp__linear-mh4gf__get_issue` を再実行する
+- PR 作成から 30〜60 秒後に「Tracker 操作」の issue 取得を再実行する
 - `attachments` 配列に対象 PR の URL が含まれていることを確認する
 - 含まれていない場合は PR タイトルの identifier 記載を見直し、`gh pr edit --title` で修正して再検証する
-- 2 分待ってもアタッチされない場合は Linear ↔ GitHub 連携側の不整合の可能性。workpad に「アタッチ未付与」を明記し、`Human Review` で人間判断に委ねる
+- 2 分待ってもアタッチされない場合は Linear と GitHub の連携側の不整合の可能性。workpad に「アタッチ未付与」を明記し、`Human Review` で人間判断に委ねる
+
+### kind: github
+
+PR 本文に `Closes <identifier>` を verbatim で書く (例: `Closes #123`)。マージ時に issue が close され、終端状態へ移る。
+
+`Refs:` や `Related to` は close を発火させないため使わない。リンクは PR 本文のこの 1 行だけで成立し、アタッチ検証のステップは不要。
 
 ## PR ルール
 
 - `main` への直接プッシュ禁止。必ず `gh pr create` で PR を出す
-- PR タイトル末尾に `(<issue identifier>)` を必須記載 (例: `docs(workflow): ... (MH-67)`)
-- PR 本文の末尾に Linear issue の URL を併記する (ステップ 0 の `get_issue` 結果から取る)。人間のレビュアーが Linear へ遷移できるようにするため
+- identifier の記載は「Identifier ルール」の tracker 別の規約に従う
+- PR 本文の末尾に issue の URL を併記する (ステップ 0 の issue 取得結果から取る)。人間のレビュアーが issue へ遷移できるようにするため
 - PR 本文は `--body-file` で渡す。`.claude/tmp/pr-body-<slug>.md` に書いて `gh pr create --body-file <path>` で渡す
 - issue が曖昧 (受け入れ条件が不明) なら、PR 本文に計画と質問を書いた Draft PR を開いて止まる
