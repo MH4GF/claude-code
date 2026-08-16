@@ -120,9 +120,15 @@ route キーは tracker で異なる。
 | 重複検知 | `list_issues(query="<keyword>", project="<projectId>")` |
 | 起票 | `save_issue` |
 
-`save_issue` の引数は `team` / `project` / `title` / `description` (ステップ 4 で書いたファイルを Read して渡す) / `state` (project の `Todo` 相当 state ID) / `labels` (実在 label の配列)。
+`save_issue` の引数は次のとおり。
 
-project レスポンスに teams が含まれていればそれを team ID に使う。含まれない時は `list_teams` で解決する。
+- `team` / `project` — ステップ 2 で解決した ID
+- `title` — ステップ 5 で決めた title
+- `description` — ステップ 4 で書いたファイルを Read して渡す
+- `state` — project の `Todo` 相当 state ID
+- `labels` — 実在 label の配列
+
+project レスポンスが teams を含むなら、その値を team ID として使う。含まない時は `list_teams` で解決する。
 
 ### kind: github
 
@@ -133,7 +139,7 @@ project レスポンスに teams が含まれていればそれを team ID に�
 | 重複検知 | `gh issue list --repo <repo> --search "<keyword>" --state all` |
 | 起票 | `gh issue create --repo <repo> --title "<title>" --body-file .claude/tmp/create-issue-body-<slug>.md --label "status:todo"` |
 
-`--label "status:todo"` が Symphony の `active_states` に対応する開始状態。設計議論を先に挟みたい issue はラベルを付けずに起票すると `Backlog` 扱いになり、Symphony は拾わない。
+`--label "status:todo"` が Symphony の `active_states` に対応する開始状態。設計議論を挟みたい issue はラベルなしで起票する。`Backlog` 扱いとなり Symphony の pick up 対象から外れる。
 
 優先度を付けるなら `--label "priority:<1-4>"` を併記する。
 
@@ -153,9 +159,9 @@ Linear MCP は claude のグローバル設定で workspace ごとに別 server 
 
 ### route キーが tracker で違う
 
-`kind: linear` では Symphony が同じ project の中で複数の WORKFLOW.md を並列駆動するため、route キーとして label が要る。label 1 つが repo 1 つの WORKFLOW へ対応する。どの label が実在するかは workspace ごとに違うため、候補を本文へ固定せず実行時に引く。label なしの issue はどの WORKFLOW からも拾われず宙吊り化する。
+`kind: linear` では Symphony が同じ project の中で複数の WORKFLOW.md を並列駆動するため、route キーとして label が要る。label 1 つが repo 1 つの WORKFLOW へ対応する。どの label が実在するかは workspace ごとに違う。候補を本文へ固定せず、実行時に引く。label なしの issue はどの WORKFLOW からも拾われず宙吊り化する。
 
-`kind: github` では issue が repo に属するため route キーが不要になる。起票先の repo を決めた時点で route が確定する。
+`kind: github` では issue が repo へ属するため route キーが要らない。起票先の repo を決めた時点で route が確定する。
 
 ### description を単一ソースにする
 

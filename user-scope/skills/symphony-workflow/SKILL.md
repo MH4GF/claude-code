@@ -22,7 +22,7 @@ Symphony からディスパッチされた bg セッションが issue を処理
 
 ## Tracker 操作
 
-以降の手順が参照する操作の実体。`<repo>` は `WORKFLOW.md` の `tracker.repo` (`owner/name`)、`<n>` は identifier `#123` の数値部分。
+以降の手順が参照する操作の実体。`<repo>` に `WORKFLOW.md` の `tracker.repo` (`owner/name`) を、`<n>` に identifier `#123` の数値部分を入れる。
 
 | 操作 | kind: linear | kind: github |
 | --- | --- | --- |
@@ -357,7 +357,7 @@ PR タイトル末尾に `(<issue identifier>)` を付ける (例: `docs(workflo
 
 PR 本文に `Closes <identifier>` を verbatim で書く (例: `Closes #123`)。マージ時に issue が close され、終端状態へ移る。
 
-`Refs:` や `Related to` は close を発火させないため使わない。リンクは PR 本文のこの 1 行だけで成立し、アタッチ検証のステップは不要。
+`Refs:` や `Related to` では close が発火しないため使わない。リンクは PR 本文のこの 1 行だけで成立し、アタッチ検証のステップを踏まない。
 
 ## PR ルール
 
