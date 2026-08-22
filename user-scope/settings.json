@@ -68,7 +68,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh"
+    "command": "bash ~/.claude/hooks/statusline.sh"
   },
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true,
