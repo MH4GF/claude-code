@@ -1,7 +1,8 @@
 ---
 tracker:
   kind: github
-  repo: MH4GF/claude-code
+  provider:
+    repo: MH4GF/claude-code
   active_states: ["Todo", "In Progress", "Merging", "Rework"]
   terminal_states: ["Done", "Canceled"]
 
