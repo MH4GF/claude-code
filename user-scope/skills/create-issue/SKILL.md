@@ -1,35 +1,35 @@
 ---
 name: create-issue
-description: tracker の issue を本セッション内で起票する。事前に superpowers:brainstorming で意図を固めてから、実行時に解決した起票先へ書き込む。「これも issue にして」「あとで Symphony に拾わせたい」「Linear に追加して」「GitHub issue 立てて」「フォローアップを issue 化」等で必ず発動する。会話中に複数の起票候補が浮上した時も発動する。
+description: tracker の issue を本セッション内で起票する。事前に grilling で意図を固めてから、実行時に解決した起票先へ書き込む。「これも issue にして」「あとで Symphony に拾わせたい」「Linear に追加して」「GitHub issue 立てて」「フォローアップを issue 化」等で必ず発動する。会話中に複数の起票候補が浮上した時も発動する。
 ---
 
 # create-issue
 
-ユーザーの一行の意図を、`superpowers:brainstorming` で固めてから issue として起票する skill。issue body は brainstorming の議論結果から直接組み立てる。起票先と書き込み手段は実行時に解決する (「起票先を解決する」節)。
+ユーザーの一行の意図を、`grilling` で固めてから issue として起票する skill。issue body は grilling で確定した内容から直接組み立てる。起票先と書き込み手段は実行時に解決する (「起票先を解決する」節)。
 
 Symphony 系の運用へ乗せる前提で、起票先は Symphony の 1 系統と 1 対 1 に対応する。Symphony が次の poll で拾うことを期待する。
 
-## なぜ brainstorming を必須にするか
+## なぜ grilling を必須にするか
 
-brainstorming skill の哲学に従う。「simple な issue こそ未検証の前提が無駄な実装を生む」。issue の Outcome / Why / 完了条件を曖昧なまま起票すると、Symphony が拾った後の実装ワーカーは推測で動く羽目になる。brainstorming で意図を固めれば、その議論結果が issue body の素材になる。
+simple に見える issue ほど、未検証の前提が無駄な実装を生む。issue の Outcome / Why / 完了条件を曖昧なまま起票すると、Symphony が拾った後の実装ワーカーは推測で動く羽目になる。
+
+grilling は設計判断を design tree として展開し、frontier (前提が揃った決定) が空になるまで質問ラウンドを回す。全ての分岐を訪れて暗黙の仮定が残っていない状態が、そのまま issue body の素材になる。
 
 ## 手順
 
-### 1. superpowers:brainstorming で意図を固める
+### 1. grilling で意図を固める
 
-Skill ツール経由で `superpowers:brainstorming` を起動し、ユーザー の一行の意図を渡す。brainstorming は次を実施する。
+Skill ツール経由で `grilling` を起動し、ユーザー の一行の意図を渡す。grilling は次を実施する。
 
-- project context の探索 (関連ファイル / 先行事例 / 既存 issue)
-- clarifying questions (one at a time)
-- 2-3 approaches の提示と user 選択
-- design sections の提示と user 承認
+- 意図を design tree へ展開し、前提が揃った決定の集合 (frontier) を洗い出す
+- frontier の質問を 1 ラウンドにまとめ、番号付き・推奨案付きで提示してユーザー の回答を待つ
+- 回答で tree を組み直し、frontier が空になるまでラウンドを繰り返す
+- 環境から取れる事実 (関連ファイル / 先行事例 / 既存 issue) は sub-agent で自分で調べる。ユーザー へ聞くのは決定だけ
 
 注意点:
 
-- brainstorming skill の標準フローには「Write design doc → spec self-review → User reviews spec → Invoke writing-plans skill」がある
-- 本 skill 経由では design doc を別ファイルとして書かない。議論結果は直接 issue description へ統合する
-- 別ファイル書き出しと writing-plans 起動が起きそうになったら、ユーザー へ確認してスキップする
-- 確認文言: 「create-issue 経由なので design doc 書き出しと writing-plans をスキップし、議論結果から直接起票へ進む」
+- frontier が空になり、shared understanding に達したとユーザー が確認するまでステップ 2 へ進まない。grilling は確認前に動くことを禁じている
+- 議論結果を design doc として別ファイルへ書き出さない。直接 issue description へ統合する
 
 理由: bg session の作業 workspace は origin/main の depth=1 clone なので、scraps/open/ 等へ書いた新規ファイルを bg session 側から読めない。issue body だけが情報源になる前提で組む。
 
@@ -45,13 +45,13 @@ Skill ツール経由で `superpowers:brainstorming` を起動し、ユーザー
 
 ### 3. 重複を検索する
 
-brainstorming で出てきたキーワード (1〜2 語) で既存 issue を検索する。検索は終端状態 (`Done` / `Canceled`) 以外をすべて対象にする。実装中や `Human Review` の issue と重なることがあり、状態を絞ると取りこぼす。
+grilling で出てきたキーワード (1〜2 語) で既存 issue を検索する。検索は終端状態 (`Done` / `Canceled`) 以外をすべて対象にする。実装中や `Human Review` の issue と重なることがあり、状態を絞ると取りこぼす。
 
 近い既存 issue が出た場合、新規作成せず該当の identifier と URL をユーザー へ報告して止まる。
 
 ### 4. description を組み立てる
 
-brainstorming の議論結果から、次の節構成へ落とす。
+grilling で確定した内容から、次の節構成へ落とす。
 
 - `## Outcome` — 最終状態と価値を箇条書きで 2〜4 点。手順は書かない
 - `## Why` — 起票の動機・前例との関係・設計の理由。bg session が edge case で判断するための背景情報
@@ -149,7 +149,9 @@ project レスポンスが teams を含むなら、その値を team ID とし�
 
 ### 親セッション内で同期実行する
 
-brainstorming と起票を本セッションで完結させる。別 bg セッションを spawn する価値は薄い。座って起票する場面が大半。bg を挟むと permission prompt 待ちで止まるリスクが増える。
+grilling と起票を本セッションで完結させる。別 bg セッションを spawn する価値は薄い。座って起票する場面が大半。bg を挟むと permission prompt 待ちで止まるリスクが増える。
+
+例外は grilling が事実確認へ飛ばす sub-agent だけ。決定はすべて本セッションでユーザー へ問う。
 
 ### Linear MCP server を実行時に解決する
 
@@ -171,9 +173,9 @@ bg session の作業 workspace は origin/main の depth=1 clone なので、scr
 
 ## エッジケース
 
-- 意図が複数 issue にまたがる時: brainstorming 内で「1 issue に統合か個別に分けるか」を AskUserQuestion で確認する。分けるときは brainstorming も issue ごとに分けて回す
+- 意図が複数 issue にまたがる時: 「1 issue に統合か個別に分けるか」を grilling の最初のラウンドの質問として出す。分けるときは grilling も issue ごとに分けて回す
 - 該当 project が `list_projects` に無い時 (`kind: linear`): ユーザー へ「project 名が違うか、解決した Linear MCP server の権限スコープに無い」と報告して止まる
 - 利用可能な Linear MCP server が 1 つも無い時 (`kind: linear`): 起票先を解決できない。ユーザー へ Linear MCP の登録状況を確認するよう報告して止まる
 - `gh` が未認証の時 (`kind: github`): ユーザー へ `gh auth status` の確認を依頼して止まる
 - 書き込みが認証エラーで失敗した時: 再認証をユーザー へ依頼してから止まる。リトライしない
-- brainstorming をスキップしたい正当な理由がある時 (= ユーザー が「brainstorming は不要、直接起票して」と明示した時): 例外的に brainstorming を踏まず、ステップ 2 以降のみ実行する。スキップした事実を報告に明記する
+- grilling をスキップしたい正当な理由がある時 (= ユーザー が「grilling は不要、直接起票して」と明示した時): 例外的に grilling を踏まず、ステップ 2 以降のみ実行する。スキップした事実を報告に明記する
