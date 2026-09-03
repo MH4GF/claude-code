@@ -14,7 +14,6 @@ cyan="\033[36m"
 yellow="\033[33m"
 green="\033[32m"
 red="\033[31m"
-magenta="\033[35m"
 blue="\033[34m"
 
 # Color helper: green <50, yellow 50-79, red >=80
@@ -44,18 +43,6 @@ fmt_duration() {
 # --- Line 1: orientation ---
 
 dir_name=$(basename "$dir")
-
-git_info=""
-if git -C "$dir" rev-parse --git-dir &>/dev/null; then
-    branch=$(git -C "$dir" -c core.useBuiltinFSMonitor=false rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')
-    if [ -n "$branch" ]; then
-        if git -C "$dir" -c core.useBuiltinFSMonitor=false diff-index --quiet HEAD -- 2>/dev/null; then
-            git_info="$branch"
-        else
-            git_info="${branch}*"
-        fi
-    fi
-fi
 
 short_model=$(echo "$model" | sed 's/Claude //' | sed 's/ /-/g')
 if [[ "$model_id" == *"opus"* ]]; then
@@ -87,29 +74,33 @@ case "$effort" in
 esac
 
 sep="${dim} · ${reset}"
-line="${bold}${dir_name}${reset}"
-[ -n "$git_info" ] && line+="${sep}${magenta}${git_info}${reset}"
-line+="${sep}${model_str}"
-[ -n "$effort_str" ] && line+="${sep}${dim}effort${reset} ${effort_str}"
-line+="${sep}${dim}ctx${reset} ${ctx_color}${ctx_pct}%${reset}"
 
+fh_str=""
 if [ -n "$fh_pct_raw" ]; then
     fh_pct=$(printf "%.0f" "$fh_pct_raw")
     fh_color=$(color_for_pct "$fh_pct")
     fh_reset=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
     fh_suffix=""
     [ -n "$fh_reset" ] && fh_suffix=" ${dim}↻$(fmt_duration $((fh_reset - now)))${reset}"
-    line+="${sep}${dim}5h${reset} ${fh_color}${fh_pct}%${reset}${fh_suffix}"
+    fh_str="${dim}5h${reset} ${fh_color}${fh_pct}%${reset}${fh_suffix}"
 fi
 
+sd_str=""
 if [ -n "$sd_pct_raw" ]; then
     sd_pct=$(printf "%.0f" "$sd_pct_raw")
     sd_color=$(color_for_pct "$sd_pct")
     sd_reset=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
     sd_suffix=""
     [ -n "$sd_reset" ] && sd_suffix=" ${dim}↻$(fmt_duration $((sd_reset - now)))${reset}"
-    line+="${sep}${dim}7d${reset} ${sd_color}${sd_pct}%${reset}${sd_suffix}"
+    sd_str="${dim}7d${reset} ${sd_color}${sd_pct}%${reset}${sd_suffix}"
 fi
+
+line="${bold}${dir_name}${reset}"
+line+="${sep}${model_str}"
+[ -n "$fh_str" ] && line+="${sep}${fh_str}"
+[ -n "$sd_str" ] && line+="${sep}${sd_str}"
+line+="${sep}${dim}ctx${reset} ${ctx_color}${ctx_pct}%${reset}"
+[ -n "$effort_str" ] && line+="${sep}${effort_str}"
 
 if [ "$output_style" != "null" ] && [ "$output_style" != "default" ]; then
     line+="${sep}${dim}${output_style}${reset}"
