@@ -96,7 +96,7 @@ route キーは tracker で異なる。
 ユーザーに 1〜2 行で次を伝える。
 
 - 起票した issue の identifier (verbatim) と URL
-- Symphony が次の poll (約 30 秒以内) で拾うはずである旨
+- Symphony が次の poll (約 30 秒以内) で拾うはずである旨。`blockedBy` を張った issue は先行 issue が終端状態になるまで拾われないので、その旨を代わりに伝える
 
 その後は本セッションの元タスクに戻る。
 
@@ -119,6 +119,7 @@ route キーは tracker で異なる。
 | team の実在 label 取得 | `list_issue_labels(team="<teamId>")` |
 | 重複検知 | `list_issues(query="<keyword>", project="<projectId>")` |
 | 起票 | `save_issue` |
+| リレーションの確認 | `get_issue(id="<identifier>", includeRelations=true)` |
 
 `save_issue` の引数は次のとおり。
 
@@ -127,8 +128,18 @@ route キーは tracker で異なる。
 - `description` — ステップ 4 で書いたファイルを Read して渡す
 - `state` — project の `Todo` 相当 state ID
 - `labels` — 実在 label の配列
+- `blockedBy` — 先行させたい issue の identifier 配列。順序を付けるときのみ (「順序を制御する」節)
 
 project レスポンスが teams を含むなら、その値を team ID として使う。含まない時は `list_teams` で解決する。
+
+#### 順序を制御する
+
+Symphony の dispatch は `blockedBy` リレーションを尊重する。blocked な issue は `Todo` + route label + assignee が揃っていても拾われない。
+
+- 同じファイルを触る issue を複数起票するときは、先行させたい方を `Todo` のままにし、後続の `save_issue` へ `blockedBy` を渡す
+- 順序を表すために `Backlog` へ落とさない。`Backlog` は「着手判断が未了」の意味で、順序の意図が伝わらない
+- `WORKFLOW.md` の frontmatter には `required_labels` / `active_states` / `assignee` しか無く、blocked の扱いは書かれていない。ファイルだけ読んで「拾われるのを止めるには `Backlog` しかない」と判断しない。リレーションを見ているのは orchestrator 側
+- `save_issue` のレスポンスにリレーションは出ない。張れたことは `get_issue(includeRelations: true)` で確認する
 
 ### kind: github
 
@@ -173,7 +184,7 @@ bg session の作業 workspace は origin/main の depth=1 clone なので、scr
 
 ## エッジケース
 
-- 意図が複数 issue にまたがる時: 「1 issue に統合か個別に分けるか」を grilling の最初のラウンドの質問として出す。分けるときは grilling も issue ごとに分けて回す
+- 意図が複数 issue にまたがる時: 「1 issue に統合か個別に分けるか」を grilling の最初のラウンドの質問として出す。分けるときは grilling も issue ごとに分けて回す。着手順に依存があるなら、後続へ `blockedBy` を張る (`kind: linear` のみ。「順序を制御する」節)
 - 該当 project が `list_projects` に無い時 (`kind: linear`): ユーザー へ「project 名が違うか、解決した Linear MCP server の権限スコープに無い」と報告して止まる
 - 利用可能な Linear MCP server が 1 つも無い時 (`kind: linear`): 起票先を解決できない。ユーザー へ Linear MCP の登録状況を確認するよう報告して止まる
 - `gh` が未認証の時 (`kind: github`): ユーザー へ `gh auth status` の確認を依頼して止まる
