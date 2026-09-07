@@ -4,3 +4,7 @@ node_modules/
 
 # unslop shared rule cache (MH4GF/shared-config/unslop/prh.yml が正。CI と unslop-guard hook が取得する)
 prh.yml
+
+user-scope/skills/design-doc-reviewer
+user-scope/skills/log-failure
+user-scope/skills/lx-design
