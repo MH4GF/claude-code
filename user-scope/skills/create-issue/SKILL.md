@@ -74,6 +74,8 @@ route キーは tracker で異なる。
 - `kind: linear` — label が route キー。固定の候補を持たず、実在 label を引いて選ぶ。label なしでは Symphony が拾わないため必須。対象 repo に対応する label が実在しない場合は起票せず、その旨をユーザー へ報告して止まる
 - `kind: github` — issue が repo に属するため route キーは不要。ステップ 2 で決めた repo がそのまま宛先になる
 
+priority は設定しない。ユーザー へ確認もしない。現状 priority を運用判断に使っておらず、付けても Symphony の dispatch 順序は変わらない。順序を付けたいときは `blockedBy` を使う (`kind: linear` のみ。「順序を制御する」節)。
+
 ### 6. repo 固有の issue 規約を反映する
 
 その repo のローカル clone が見つかった場合のみ、issue 起票規約を読んで description をその節構成へ合わせる。clone の置き場は端末ごとの規約次第なので、path を本文へ直書きしない。
@@ -153,8 +155,6 @@ Symphony の dispatch は `blockedBy` リレーションを尊重する。blocke
 `--label "status:todo"` が Symphony の `active_states` に対応する開始状態。設計議論を先に挟みたい issue は `--label "status:backlog"` を付けて起票する。Symphony の pick up 対象から外れ、Backlog の一覧に並ぶ。
 
 `status:*` を必ず 1 つ付ける。無しでも dispatch されないが、それは「Symphony 管理外」を意味する状態で、bot が立てる恒久 issue と同じ扱いになり Backlog の一覧から漏れる。
-
-優先度を付けるなら `--label "priority:<1-4>"` を併記する。
 
 ## 設計判断と理由
 
