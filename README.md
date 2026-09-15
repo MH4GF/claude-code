@@ -10,7 +10,7 @@ MH4GF's Claude Code configuration and plugin marketplace.
 
 ## ユーザー設定 (`user-scope/`)
 
-`user-scope/` 配下に `CLAUDE.md` / `settings.json` / `commands/` / `skills/` / `hooks/` がある。`./setup.sh` で Claude Code 用の設定を `~/.claude/` へ symlink する。また、Codex の個人共通スキル置き場 `~/.agents/skills` を `user-scope/skills` へ symlink する。
+`user-scope/` 配下に `CLAUDE.md` / `AGENTS.md` / `settings.json` / `commands/` / `skills/` / `hooks/` がある。`./setup.sh` で Claude Code 用の設定を `~/.claude/`、Codex 用の指示を `~/.codex/AGENTS.md` へ symlink する。また、Codex の個人共通スキル置き場 `~/.agents/skills` を `user-scope/skills` へ symlink する。
 
 ```bash
 ./setup.sh

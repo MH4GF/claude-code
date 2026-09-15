@@ -51,5 +51,8 @@ ln -sfn "$USER_SCOPE/hooks" ~/.claude/hooks
 ln -sfn "$USER_SCOPE/skills" ~/.claude/skills
 ln -sfn "$USER_SCOPE/agents" ~/.claude/agents
 
+mkdir -p ~/.codex
+ln -sf "$USER_SCOPE/AGENTS.md" ~/.codex/AGENTS.md
+
 mkdir -p ~/.agents
 ln -sfn "$USER_SCOPE/skills" ~/.agents/skills
