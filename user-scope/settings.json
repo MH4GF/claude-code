@@ -5,10 +5,10 @@
     "UNSLOP_GUARD": "off",
     "CLAUDE_NOSLEEP_AC_ONLY": "0"
   },
-  "model": "opus[1m]",
   "permissions": {
     "defaultMode": "auto"
   },
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -82,8 +82,9 @@
       }
     }
   },
+  "effortLevel": "high",
   "advisorModel": "fable",
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "agentPushNotifEnabled": true,
-  "effortLevel": "high"
+  "agentPushNotifEnabled": true
 }
