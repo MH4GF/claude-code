@@ -5,10 +5,10 @@
     "UNSLOP_GUARD": "off",
     "CLAUDE_NOSLEEP_AC_ONLY": "0"
   },
-  "model": "opus[1m]",
   "permissions": {
     "defaultMode": "auto"
   },
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -71,7 +71,6 @@
     "command": "bash ~/.claude/hooks/statusline.sh"
   },
   "enabledPlugins": {
-    "superpowers@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
     "codex@openai-codex": true
   },
@@ -83,8 +82,9 @@
       }
     }
   },
+  "effortLevel": "high",
   "advisorModel": "fable",
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "agentPushNotifEnabled": true,
-  "effortLevel": "high"
+  "agentPushNotifEnabled": true
 }
