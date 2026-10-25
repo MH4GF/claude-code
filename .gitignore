@@ -1,5 +1,7 @@
 .claude/tmp/
 user-scope/skills/*-workspace/
+# Claude Code の skill sync が ~/.claude/skills 越しに書く同期キャッシュ
+user-scope/skills/synced/
 node_modules/
 
 # unslop shared rule cache (MH4GF/shared-config/unslop/prh.yml が正。CI と unslop-guard hook が取得する)
