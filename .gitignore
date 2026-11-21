@@ -8,3 +8,6 @@ prh.yml
 user-scope/skills/design-doc-reviewer
 user-scope/skills/log-failure
 user-scope/skills/lx-design
+
+# claude.ai から同期される skill。~/.claude/skills が user-scope/skills への symlink なので Claude Code がここへ書き込む
+user-scope/skills/synced/
