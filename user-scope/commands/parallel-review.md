@@ -4,13 +4,12 @@ description: 複数の観点で並列コードレビューを実行し、結果�
 
 ## Task
 
-以下の 3 つのレビューを**並列**で実行し、結果を統合して報告する。
+以下の 2 つのレビューを**並列**で実行し、結果を統合して報告する。
 
 ### 実行するレビュー
 
-1. codex-review — `codex review` CLI によるコードレビュー
-2. claude-md-checker — CLAUDE.md 準拠チェック (ユーザースコープ agent)
-3. deslop — AI 生成コード由来のノイズ（過剰コメント・防御的 try/catch・`any` キャスト等）を検出（Skill ツール経由）
+1. claude-md-checker — CLAUDE.md 準拠チェック (ユーザースコープ agent)
+2. deslop — AI 生成コード由来のノイズ（過剰コメント・防御的 try/catch・`any` キャスト等）を検出（Skill ツール経由）
 
 ### 実行方法
 
@@ -18,7 +17,6 @@ description: 複数の観点で並列コードレビューを実行し、結果�
 
 ```
 Agent tool: subagent_type: "claude-md-checker" → CLAUDE.md 準拠チェック
-Skill tool: skill: "codex-review" → コードレビュー
 Skill tool: skill: "deslop" → AI 生成ノイズ検出
 ```
 
@@ -28,9 +26,6 @@ Skill tool: skill: "deslop" → AI 生成ノイズ検出
 
 ```markdown
 ## レビュー結果サマリー
-
-### Codex Review
-[結果]
 
 ### CLAUDE.md Checker
 [結果]
@@ -52,7 +47,7 @@ Skill tool: skill: "deslop" → AI 生成ノイズ検出
 
 ### 再実行の停止条件
 
-3 ツールはいずれも非決定的で、毎ラウンド別の指摘を出す。「指摘ゼロ」は停止条件として機能しないため、次の 3 つで打ち切る。
+2 ツールはいずれも非決定的で、毎ラウンド別の指摘を出す。「指摘ゼロ」は停止条件として機能しないため、次の 3 つで打ち切る。
 
 1. **ラウンド上限は 3**。3 ラウンド目を終えたら、未対応の指摘が残っていても再実行せず、残件を一覧にして報告し停止する
 2. **コード変更を伴う対応をしなかったラウンドの後は再実行しない**。プッシュバックと起票だけで終えたラウンドは、再実行しても同じ入力に同じツールを当てるだけになる
