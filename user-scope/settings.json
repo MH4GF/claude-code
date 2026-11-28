@@ -6,7 +6,11 @@
     "CLAUDE_NOSLEEP_AC_ONLY": "0"
   },
   "permissions": {
-    "defaultMode": "auto"
+    "defaultMode": "auto",
+    "allow": [
+      "Bash(gh workflow run terraform.yml*)",
+      "Bash(gh workflow run deploy.yml*)"
+    ]
   },
   "model": "opus[1m]",
   "hooks": {
